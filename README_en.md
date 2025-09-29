@@ -77,7 +77,29 @@ dependencies {
 | Hardware Requirements | Device CPU with 8 or more cores (Snapdragon 8 Gen 2), 8GB or more memory, available storage space of 1GB or more |
 | Network        | None (Fully local operation)                                    |
 | Development IDE | Android Studio Giraffe 2022.3.1 Patch 2                         |
+| CMake Version  | CMake 3.22.1 or higher (install via Android SDK Manager)        |
+| NDK Version    | NDK version supporting arm64-v8a and armeabi-v7a architectures   |
 | Memory Requirements | Minimum 800MB memory available for the digital human          |
+
+### 4.1 Project Build
+
+The project uses the Gradle build system and supports the following build commands:
+
+```bash
+# Clean project
+./gradlew clean
+
+# Build Debug version
+./gradlew assembleDebug
+
+# Build Release version
+./gradlew assembleRelease
+
+# Build SDK AAR
+./gradlew :duix-sdk:assembleRelease
+```
+
+**Note**: If you encounter issues with missing gradlew files, the project includes complete gradle wrapper configuration and can be built normally using the above commands.
 
 ---
 
@@ -363,6 +385,9 @@ If using obfuscation, add the following in `proguard-rules.pro`:
 | Rendering black screen          | EGL configuration or texture view error | Use SDK-provided example settings |
 | No PCM playback effect          | Incorrect format or `startPush` not called | Ensure audio format is correct and call push method |
 | Model download slow             | Unstable network or restricted CDN | Support self-hosted model file storage service |
+| CMake version mismatch error    | CMake version configured in build.gradle doesn't exist | Update to installed CMake version (e.g. 3.22.1) |
+| gradlew file not found          | Missing Gradle Wrapper files | Project includes complete wrapper config, can be used directly |
+| SDK XML version warning during build | Compatibility notice from newer NDK version | Warning doesn't affect compilation, project works normally |
 
 ---
 

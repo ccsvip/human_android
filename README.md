@@ -77,10 +77,32 @@ dependencies {
 | 硬件要求   | 要求设备 CPU8 核及以上(骁龙8 Gen2),内存 8G 及以上。可用存储空间 1GB 及以上。 |
 | 网络     | 无（完全本地运行）                                          |
 | 开发 IDE | Android Studio Giraffe 2022.3.1 Patch 2            |
+| CMake版本 | CMake 3.22.1 或更高版本（通过Android SDK Manager安装）        |
+| NDK版本   | 支持arm64-v8a和armeabi-v7a架构的NDK版本                   |
 | 内存要求   | 可用于数字人的内存 >= 800MB                                 |
 
 
 **编译项目的Gradle使用的JDK版本为17,需要在File->Setting->Build,Execution,Deployment->Grade Projects->Gradle JDK: ${选择一个17版本的JDK}**
+
+### 4.1 项目构建
+
+项目使用Gradle构建系统，支持以下构建命令：
+
+```bash
+# 清理项目
+./gradlew clean
+
+# 编译Debug版本
+./gradlew assembleDebug
+
+# 编译Release版本
+./gradlew assembleRelease
+
+# 构建SDK AAR
+./gradlew :duix-sdk:assembleRelease
+```
+
+**注意**: 如果遇到gradlew文件不存在的问题，项目已包含完整的gradle wrapper配置，可以正常使用上述命令进行构建。
 
 ---
 
@@ -442,6 +464,9 @@ duix?.startRandomMotion(true)
 | 渲染黑屏                | EGL 配置或纹理视图设置错误          | 使用 SDK 提供示例中的设置方法      |
 | PCM 无播报效果           | 格式不符或未调用 startPush       | 确保音频格式正确并调用推送方法        |
 | 模型下载过慢              | 网络不稳定或 CDN 受限            | 支持自建模型文件托管服务           |
+| CMake版本不匹配错误        | build.gradle中配置的CMake版本不存在 | 更新为系统中已安装的CMake版本（如3.22.1） |
+| gradlew文件不存在        | 缺少Gradle Wrapper文件       | 项目已包含完整wrapper配置，可直接使用 |
+| 编译时SDK XML版本警告     | NDK版本较新导致的兼容性提示         | 警告不影响编译，可正常使用项目         |
 
 ---
 
