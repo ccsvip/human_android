@@ -1,0 +1,76 @@
+# Android Studio和Gradle
+*.iml
+.gradle/
+/local.properties
+/.idea/
+.DS_Store
+/build/
+*/build/
+*/*/build/
+*/debug/
+*/release/
+/captures
+.externalNativeBuild
+.cxx/
+
+# 构建产物
+*.apk
+*.aab
+*.aar
+output-metadata.json
+lint-results*.html
+lint-results*.xml
+
+# 签名文件
+*.keystore
+*.jks
+keystore.properties
+
+# NDK
+obj/
+.externalNativeBuild/
+.cxx/
+
+# 日志和临时文件
+*.log
+*.tmp
+*.cache
+~$*
+
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Windows
+*.bat
+*.exe
+*.msi
+
+# 自定义本地配置
+local.properties
+
+# Gradle wrapper (如果团队统一管理可以取消注释)
+# gradle/wrapper/gradle-wrapper.jar
+# gradle/wrapper/gradle-wrapper.properties
+# gradlew
+# gradlew.bat
+
+# 备份文件
+*.orig
+*.backup
+*.bak
+
+# 测试报告
+test-results/
+screenshots/
+
+# 内存分析
+*.hprof
+
+# CLAUDE.md相关
+.claude/

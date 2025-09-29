@@ -1,0 +1,112 @@
+# Android Studio和Gradle
+*.iml
+.gradle/
+/local.properties
+/.idea/
+.DS_Store
+/build/
+*/build/
+*/*/build/
+**/build_alt
+*/debug/
+*/release/
+/captures
+.externalNativeBuild
+.cxx/
+
+# 构建产物
+*.apk
+*.aab
+*.aar
+output-metadata.json
+lint-results*.html
+lint-results*.xml
+
+# 签名文件和证书
+*.keystore
+*.jks
+*.p12
+*.pem
+keystore.properties
+demo.jks
+
+# NDK和Native库
+obj/
+.externalNativeBuild/
+.cxx/
+*.so
+*.a
+*.lib
+*.dll
+
+# 第三方库和依赖(对Claude分析无价值的大型文件)
+duix-sdk/src/main/cpp/third/
+duix-sdk/libs/
+gradle/wrapper/
+
+# 大型资源文件
+*.zip
+*.tar.gz
+*.tar
+*.rar
+*.7z
+*.model
+*.bin
+*.onnx
+*.ncnn
+
+# 日志和临时文件
+*.log
+data.log
+*.tmp
+*.temp
+*.cache
+~$*
+
+# macOS和Windows系统文件
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# Windows可执行文件
+*.bat
+*.exe
+*.msi
+
+# IDE和编辑器文件
+.vscode/
+*.swp
+*.swo
+
+# 备份文件
+*.orig
+*.backup
+*.bak
+
+# 测试报告和截图
+test-results/
+screenshots/
+lint-baseline.xml
+
+# 内存分析
+*.hprof
+
+# 自定义本地配置
+local.properties
+
+# Node.js(如果存在)
+node_modules/
+
+# Python(如果存在)
+__pycache__/
+*.pyc
+*.pyo
+
+# Claude相关
+.claude/
+CLAUDE.md.backup
