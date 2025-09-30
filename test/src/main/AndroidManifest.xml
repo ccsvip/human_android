@@ -13,20 +13,32 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.DUIX.Test">
+
+        <!-- 主界面Activity -->
         <activity
             android:name=".ui.activity.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
+        <!-- 数字人播放Activity -->
         <activity
             android:name=".ui.activity.CallActivity"
             android:exported="false">
         </activity>
+
+        <!-- 欢迎页面Activity -->
+        <activity
+            android:name="ai.guiji.duix.sdk.welcome.WelcomeActivity"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+            android:screenOrientation="portrait"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:exported="false"
+            android:hardwareAccelerated="true" />
+
     </application>
 
 </manifest>

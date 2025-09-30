@@ -2,6 +2,8 @@ package ai.guiji.duix.test.ui.activity
 
 import ai.guiji.duix.sdk.client.BuildConfig
 import ai.guiji.duix.sdk.client.VirtualModelUtil
+import ai.guiji.duix.sdk.welcome.WelcomeActivity
+import ai.guiji.duix.sdk.welcome.WelcomeConfig
 import ai.guiji.duix.test.R
 import ai.guiji.duix.test.databinding.ActivityMainBinding
 import ai.guiji.duix.test.ui.dialog.LoadingDialog
@@ -15,6 +17,10 @@ import java.io.File
 
 
 class MainActivity : BaseActivity() {
+
+    companion object {
+        private const val REQUEST_CODE_WELCOME = 1001
+    }
 
     private lateinit var binding: ActivityMainBinding
     private var mLoadingDialog: LoadingDialog?=null
@@ -43,7 +49,50 @@ class MainActivity : BaseActivity() {
 
         binding.tvSdkVersion.text = "SDK Version: ${BuildConfig.VERSION_NAME}"
 
+        // 检查是否需要显示欢迎页面
+        checkAndShowWelcomePage()
 
+        setupUI()
+    }
+
+    /**
+     * 检查并显示欢迎页面
+     */
+    private fun checkAndShowWelcomePage() {
+        if (WelcomeConfig.shouldShowWelcomePage(this)) {
+            // 启动欢迎页面
+            val intent = Intent(this, WelcomeActivity::class.java)
+            startActivityForResult(intent, REQUEST_CODE_WELCOME)
+        } else {
+            // 用户已经做过选择，根据选择显示相应提示
+            showUserChoiceInfo()
+        }
+    }
+
+    /**
+     * 显示用户选择信息
+     */
+    private fun showUserChoiceInfo() {
+        val userChoice = WelcomeConfig.getUserChoiceEnum(this)
+        when (userChoice) {
+            WelcomeConfig.UserChoice.LOCAL -> {
+                Toast.makeText(this, "当前模式：本地数字人", Toast.LENGTH_SHORT).show()
+            }
+            WelcomeConfig.UserChoice.CLOUD -> {
+                Toast.makeText(this, "当前模式：云端数字人", Toast.LENGTH_SHORT).show()
+            }
+            else -> {
+                // 理论上不应该到这里
+                Toast.makeText(this, "未检测到选择，将重新显示欢迎页面", Toast.LENGTH_SHORT).show()
+                checkAndShowWelcomePage()
+            }
+        }
+    }
+
+    /**
+     * 设置UI组件
+     */
+    private fun setupUI() {
         binding.btnMoreModel.setOnClickListener {
             val modelSelectorDialog = ModelSelectorDialog(mContext, models, object : ModelSelectorDialog.Listener{
                 override fun onSelect(url: String) {
@@ -54,6 +103,30 @@ class MainActivity : BaseActivity() {
         }
         binding.btnPlay.setOnClickListener {
             play()
+        }
+    }
+
+    /**
+     * 处理欢迎页面返回结果
+     */
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == REQUEST_CODE_WELCOME) {
+            when (resultCode) {
+                WelcomeActivity.RESULT_LOCAL_CHOICE -> {
+                    Toast.makeText(this, "您选择了本地数字人模式", Toast.LENGTH_LONG).show()
+                    // TODO: 可以在这里预加载本地资源或设置相关配置
+                }
+                WelcomeActivity.RESULT_CLOUD_CHOICE -> {
+                    Toast.makeText(this, "您选择了云端数字人模式", Toast.LENGTH_LONG).show()
+                    // TODO: 可以在这里检查网络连接或设置云端配置
+                }
+                else -> {
+                    // 用户取消选择
+                    Toast.makeText(this, "已取消选择", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
     }
 
