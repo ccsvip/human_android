@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>欢迎使用数字人</title>
+    <link rel="stylesheet" href="./css/tailwind.min.css">
+    <style>
+        /* 防止页面滚动和缩放 */
+        body {
+            overflow: hidden;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+    </style>
+</head>
+<body class="modern-bg min-h-screen">
+    <div class="flex flex-col items-center justify-center min-h-screen welcome-container fade-in">
+
+        <!-- Logo区域 - 专业光效设计 -->
+        <div class="logo-container slide-up">
+            <!-- 增强光效层 -->
+            <div class="absolute inset-0 flex items-center justify-center">
+                <div class="light-ring light-ring-outer"></div>
+                <div class="light-ring light-ring-middle"></div>
+                <div class="light-ring light-ring-inner"></div>
+            </div>
+
+            <!-- Logo主体 - 渐变和阴影增强 -->
+            <div class="relative z-10 w-24 h-24 rounded-full flex items-center justify-center logo-center">
+                <!-- TODO: 可配置的数字人图标 - 专业设计图标 -->
+                <svg class="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 1H5C3.9 1 3 1.9 3 3V7H21V9ZM21 11H3V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V11ZM8 18C7.45 18 7 17.55 7 17S7.45 16 8 16 9 16.45 9 17 8.55 18 8 18ZM16 18C15.45 18 15 17.55 15 17S15.45 16 16 16 17 16.45 17 17 16.55 18 16 18Z"/>
+                </svg>
+            </div>
+        </div>
+
+        <!-- 主标题 - 渐变文字效果 -->
+        <h1 class="title-main text-3xl sm:text-4xl md:text-5xl text-center mb-4 slide-up">
+            欢迎使用数字人
+        </h1>
+
+        <!-- 副标题 - 优化字体层级 -->
+        <p class="subtitle-text text-lg text-center mb-12 slide-up">
+            选择一种方式开始您的体验
+        </p>
+
+        <!-- 选择按钮区域 - 现代化设计 -->
+        <div class="w-full choices-container slide-up">
+
+            <!-- 本地数字人选项 - 专业按钮设计 -->
+            <div class="choice-button" onclick="selectOption('local')" id="localOption">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="choice-icon">
+                            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="ml-4 flex-1">
+                        <h3 class="choice-title">使用本地数字人</h3>
+                        <p class="choice-description">在您的设备上运行</p>
+                    </div>
+                    <div class="arrow-right">→</div>
+                </div>
+            </div>
+
+            <!-- 云端数字人选项 - 专业按钮设计 -->
+            <div class="choice-button" onclick="selectOption('cloud')" id="cloudOption">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="choice-icon">
+                            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="ml-4 flex-1">
+                        <h3 class="choice-title">使用云端数字人</h3>
+                        <p class="choice-description">通过云服务访问</p>
+                    </div>
+                    <div class="arrow-right">→</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 底部技术支持信息 - 精致样式 -->
+        <div class="mt-12 text-center slide-up">
+            <p class="footer-text">
+                技术支持 by Acme Corp
+            </p>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="./js/welcome.js"></script>
+</body>
+</html>
