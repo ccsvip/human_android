@@ -1,0 +1,24 @@
+{
+    "mcpServers": {
+        "exa": {
+            "type": "http",
+            "url": "https://mcp.exa.ai/mcp",
+            "headers": {}
+        },
+        "memory": {
+            "command": "cmd",
+            "args": [
+                "/c",
+                "npx",
+                "-y",
+                "@smithery/cli@latest",
+                "run",
+                "@jasonmorganson/memory",
+                "--key",
+                "3f0f62a4-d0ec-4e82-9830-2594ae0bf7f0",
+                "--profile",
+                "critical-minnow-im0Knp"
+            ]
+        }
+    }
+}

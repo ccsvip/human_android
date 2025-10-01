@@ -32,7 +32,7 @@ android {
         debug {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.release
+            // Use default debug signing config instead of custom one
         }
         release {
             minifyEnabled true

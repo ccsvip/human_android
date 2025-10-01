@@ -220,7 +220,7 @@ class CallActivity : BaseActivity() {
             duix?.startPush()
             val inputStream = assets.open("pcm/2.pcm")
             val buffer = ByteArray(320)
-            var length = 0
+            var length: Int
             while (inputStream.read(buffer).also { length = it } > 0){
                 val data = buffer.copyOfRange(0, length)
                 duix?.pushPcm(data)
@@ -243,7 +243,7 @@ class CallActivity : BaseActivity() {
                 }
                 val out = FileOutputStream(wavFile)
                 val buffer = ByteArray(1024)
-                var length = 0
+                var length: Int
                 while ((inputStream.read(buffer).also { length = it }) > 0) {
                     out.write(buffer, 0, length)
                 }
@@ -271,7 +271,7 @@ class CallActivity : BaseActivity() {
                     duix?.startPush()
                     val inputStream = FileInputStream(path)
                     val buffer = ByteArray(320)
-                    var length = 0
+                    var length: Int
                     while (inputStream.read(buffer).also { length = it } > 0){
                         val data = buffer.copyOfRange(0, length)
                         duix?.pushPcm(data)

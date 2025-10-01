@@ -11,6 +11,7 @@ android {
         minSdk 24
         versionCode 13
         versionName '4.1.1'
+        ndkVersion "23.1.7779620"
 
         externalNativeBuild {
             cmake {
@@ -48,7 +49,7 @@ android {
     externalNativeBuild {
         cmake {
             path "src/main/cpp/CMakeLists.txt"
-            version "3.22.1"
+            version "4.1.0"
         }
     }
 
@@ -66,4 +67,8 @@ android {
 
 dependencies {
     api fileTree(include: ['*.jar', '*.aar'], dir: 'libs')
+
+    // AndroidX依赖 - 用于WelcomeActivity
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'androidx.activity:activity-ktx:1.7.2'
 }

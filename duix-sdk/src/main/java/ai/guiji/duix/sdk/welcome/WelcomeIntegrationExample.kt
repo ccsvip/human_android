@@ -68,6 +68,7 @@ object WelcomeIntegrationExample {
      * 在Activity中处理欢迎页面返回结果
      * 在startActivityForResult中使用
      */
+    @Suppress("UNUSED_PARAMETER")
     fun handleWelcomeResult(requestCode: Int, resultCode: Int, context: Context) {
         when (resultCode) {
             WelcomeActivity.RESULT_LOCAL_CHOICE -> {
@@ -108,6 +109,7 @@ object WelcomeIntegrationExample {
     /**
      * 设置全局配置
      */
+    @Suppress("UNUSED_PARAMETER")
     private fun setupGlobalConfig(context: Context) {
         // TODO: 在这里可以设置一些全局配置
         // 比如分析SDK初始化、日志配置等
@@ -117,6 +119,7 @@ object WelcomeIntegrationExample {
     /**
      * 初始化本地数字人功能
      */
+    @Suppress("UNUSED_PARAMETER")
     private fun initializeLocalDigitalHuman(context: Context) {
         // TODO: 在这里添加本地数字人的初始化逻辑
         // 例如：
@@ -129,6 +132,7 @@ object WelcomeIntegrationExample {
     /**
      * 初始化云端数字人功能
      */
+    @Suppress("UNUSED_PARAMETER")
     private fun initializeCloudDigitalHuman(context: Context) {
         // TODO: 在这里添加云端数字人的初始化逻辑
         // 例如：

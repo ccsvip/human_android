@@ -2,6 +2,10 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+# 你的角色
+一个经验非常丰富的架构师，写代码之前会先进行思考，适当的利用工具进行依赖分析，之后再写代码，你必须始终写高质量的代码，必须避免出现荣誉代码以及上帝类。
+你习惯每一次写代码都在文件顶部加上当前这个文件的具体功能， 函数也会详细说清楚代码注释。
+
 # 📐 数字人项目设计规范
 
 1. **单一职责**  
@@ -166,6 +170,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - 确保正确设置EGL配置以支持透明通道
 - 使用SDK提供的DUIXRenderer和DUIXTextureView可快速集成
 
+### UI架构
+必须严格采用 WebView + Tailwind CSS 的方案
+
+### 项目编译
+- 只要对代码进行了修改，修复完毕代码之后，必须进行编译，必须要明确的看到编译成功，而不是凭感觉，否则就是失败。
+
 ### 其他规则
-为了方便溯源，每解决一个问题之后，都需要在 根目录 `docs`目录下面新建一个对应的文档加上当天日期，去记录解决了什么问题，日期格式必须是`YYYY-MM-DD`。
+- 为了方便溯源，每解决一个问题之后，都需要在 根目录 `docs`目录下面新建一个对应的文档加上当天日期，去记录解决了什么问题，日期格式必须是`YYYY-MM-DD`。
 > 比如：`环境初初始化-2025-09-29.md`
+- 编译错误必须修复，编译警告比如w:xx开头的也必须修复，不能够忽略。
+
+### 关于TODO
+- 非必要禁止写TODO，写了就必须解决，而不是一直放着。

@@ -13,6 +13,8 @@ import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AppCompatActivity
 
 /**
  * 欢迎页面Activity - 使用WebView展示选择界面
@@ -29,7 +31,7 @@ import android.widget.Toast
  * - 主题切换支持
  * - 多语言支持
  */
-class WelcomeActivity : Activity() {
+class WelcomeActivity : AppCompatActivity() {
 
     companion object {
         // Intent常量
@@ -68,23 +70,53 @@ class WelcomeActivity : Activity() {
         // 创建和配置WebView
         setupWebView()
 
+        // 配置返回按钮处理
+        setupBackPressedHandler()
+
         // 加载欢迎页面
         loadWelcomePage()
     }
 
     /**
+     * 配置返回按钮处理
+     * 使用OnBackPressedDispatcher替代onBackPressed
+     */
+    private fun setupBackPressedHandler() {
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                // 防止意外退出，可以添加确认对话框
+                finish()
+            }
+        })
+    }
+
+    /**
      * 设置全屏显示
+     * 使用WindowInsetsController API (Android R+) 或 systemUiVisibility (旧版本)
      */
     private fun setupFullScreen() {
-        // 隐藏状态栏和导航栏
-        window.decorView.systemUiVisibility = (
-            View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-            or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-            or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-            or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-            or View.SYSTEM_UI_FLAG_FULLSCREEN
-            or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-        )
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+            // Android R (API 30) 及以上使用新API
+            window.setDecorFitsSystemWindows(false)
+            val windowInsetsController = window.insetsController
+            windowInsetsController?.apply {
+                // 隐藏状态栏和导航栏
+                hide(android.view.WindowInsets.Type.statusBars() or android.view.WindowInsets.Type.navigationBars())
+                // 设置沉浸模式
+                systemBarsBehavior = android.view.WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            }
+        } else {
+            // Android R 以下使用旧API
+            @Suppress("DEPRECATION")
+            window.decorView.systemUiVisibility = (
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                or View.SYSTEM_UI_FLAG_FULLSCREEN
+                or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+            )
+        }
 
         // 设置状态栏透明
         window.statusBarColor = Color.TRANSPARENT
@@ -112,7 +144,11 @@ class WelcomeActivity : Activity() {
             domStorageEnabled = true
             allowFileAccess = true
             allowContentAccess = true
+            // 这些设置对于加载本地HTML文件是必需的
+            // 虽然已被标记为deprecated，但对于本地assets中的文件是安全的
+            @Suppress("DEPRECATION")
             allowFileAccessFromFileURLs = true
+            @Suppress("DEPRECATION")
             allowUniversalAccessFromFileURLs = true
 
             // 缩放设置
@@ -138,6 +174,21 @@ class WelcomeActivity : Activity() {
                 animatePageEntry()
             }
 
+            // 新版API (Android M及以上)
+            override fun onReceivedError(
+                view: WebView?,
+                request: android.webkit.WebResourceRequest?,
+                error: android.webkit.WebResourceError?
+            ) {
+                super.onReceivedError(view, request, error)
+                if (request?.isForMainFrame == true) {
+                    handlePageError(error?.errorCode ?: -1, error?.description?.toString())
+                }
+            }
+
+            // 旧版API (保持兼容性)
+            @Deprecated("Use onReceivedError(WebView, WebResourceRequest, WebResourceError) instead")
+            @Suppress("DEPRECATION")
             override fun onReceivedError(view: WebView?, errorCode: Int, description: String?, failingUrl: String?) {
                 super.onReceivedError(view, errorCode, description, failingUrl)
                 // TODO: 添加错误处理和重试机制
@@ -188,6 +239,7 @@ class WelcomeActivity : Activity() {
     /**
      * 处理页面加载错误
      */
+    @Suppress("UNUSED_PARAMETER")
     private fun handlePageError(errorCode: Int, description: String?) {
         Toast.makeText(this, "页面加载失败: $description", Toast.LENGTH_SHORT).show()
         // TODO: 添加重试按钮或fallback UI
@@ -249,12 +301,6 @@ class WelcomeActivity : Activity() {
                 overridePendingTransition(0, android.R.anim.fade_out)
             }
             .start()
-    }
-
-    override fun onBackPressed() {
-        // 防止意外退出，可以添加确认对话框
-        // TODO: 添加退出确认对话框
-        super.onBackPressed()
     }
 
     override fun onDestroy() {

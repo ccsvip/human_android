@@ -13,18 +13,37 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import java.io.File
 
 
 class MainActivity : BaseActivity() {
 
-    companion object {
-        private const val REQUEST_CODE_WELCOME = 1001
-    }
-
     private lateinit var binding: ActivityMainBinding
     private var mLoadingDialog: LoadingDialog?=null
     private var mLastProgress = 0
+
+    /**
+     * Activity Result API替代startActivityForResult
+     */
+    private val welcomeActivityLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        when (result.resultCode) {
+            WelcomeActivity.RESULT_LOCAL_CHOICE -> {
+                Toast.makeText(this, "您选择了本地数字人模式", Toast.LENGTH_LONG).show()
+                // TODO: 可以在这里预加载本地资源或设置相关配置
+            }
+            WelcomeActivity.RESULT_CLOUD_CHOICE -> {
+                Toast.makeText(this, "您选择了云端数字人模式", Toast.LENGTH_LONG).show()
+                // TODO: 可以在这里检查网络连接或设置云端配置
+            }
+            else -> {
+                // 用户取消选择
+                Toast.makeText(this, "已取消选择", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
 
     val models = arrayListOf(
         "https://github.com/duixcom/Duix-Mobile/releases/download/v1.0.0/bendi3_20240518.zip",
@@ -62,7 +81,7 @@ class MainActivity : BaseActivity() {
         if (WelcomeConfig.shouldShowWelcomePage(this)) {
             // 启动欢迎页面
             val intent = Intent(this, WelcomeActivity::class.java)
-            startActivityForResult(intent, REQUEST_CODE_WELCOME)
+            welcomeActivityLauncher.launch(intent)
         } else {
             // 用户已经做过选择，根据选择显示相应提示
             showUserChoiceInfo()
@@ -103,30 +122,6 @@ class MainActivity : BaseActivity() {
         }
         binding.btnPlay.setOnClickListener {
             play()
-        }
-    }
-
-    /**
-     * 处理欢迎页面返回结果
-     */
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (requestCode == REQUEST_CODE_WELCOME) {
-            when (resultCode) {
-                WelcomeActivity.RESULT_LOCAL_CHOICE -> {
-                    Toast.makeText(this, "您选择了本地数字人模式", Toast.LENGTH_LONG).show()
-                    // TODO: 可以在这里预加载本地资源或设置相关配置
-                }
-                WelcomeActivity.RESULT_CLOUD_CHOICE -> {
-                    Toast.makeText(this, "您选择了云端数字人模式", Toast.LENGTH_LONG).show()
-                    // TODO: 可以在这里检查网络连接或设置云端配置
-                }
-                else -> {
-                    // 用户取消选择
-                    Toast.makeText(this, "已取消选择", Toast.LENGTH_SHORT).show()
-                }
-            }
         }
     }
 
