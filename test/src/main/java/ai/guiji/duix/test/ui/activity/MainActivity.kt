@@ -1,27 +1,29 @@
+/**
+ * 应用主入口Activity（路由器）
+ *
+ * 功能：
+ * - 应用启动入口（LAUNCHER）
+ * - 显示欢迎选择界面（WelcomeActivity）
+ * - 根据用户选择路由到对应的功能界面：
+ *   * 本地数字人 -> LocalMainActivity
+ *   * 云端数字人 -> CloudMainActivity
+ *
+ * 设计原则：
+ * - 单一职责：仅负责路由逻辑，不包含业务逻辑
+ * - 无UI界面：作为透明的路由层
+ */
 package ai.guiji.duix.test.ui.activity
 
-import ai.guiji.duix.sdk.client.BuildConfig
-import ai.guiji.duix.sdk.client.VirtualModelUtil
 import ai.guiji.duix.sdk.welcome.WelcomeActivity
 import ai.guiji.duix.sdk.welcome.WelcomeConfig
-import ai.guiji.duix.test.R
-import ai.guiji.duix.test.databinding.ActivityMainBinding
-import ai.guiji.duix.test.ui.dialog.LoadingDialog
-import ai.guiji.duix.test.ui.dialog.ModelSelectorDialog
-import android.annotation.SuppressLint
+import ai.guiji.duix.test.ui.activity.cloud.CloudMainActivity
+import ai.guiji.duix.test.ui.activity.local.LocalMainActivity
 import android.content.Intent
 import android.os.Bundle
-import android.text.TextUtils
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import java.io.File
 
 
 class MainActivity : BaseActivity() {
-
-    private lateinit var binding: ActivityMainBinding
-    private var mLoadingDialog: LoadingDialog?=null
-    private var mLastProgress = 0
 
     /**
      * Activity Result API替代startActivityForResult
@@ -31,241 +33,83 @@ class MainActivity : BaseActivity() {
     ) { result ->
         when (result.resultCode) {
             WelcomeActivity.RESULT_LOCAL_CHOICE -> {
-                Toast.makeText(this, "您选择了本地数字人模式", Toast.LENGTH_LONG).show()
-                // TODO: 可以在这里预加载本地资源或设置相关配置
+                // 用户选择本地数字人
+                routeToLocalDigitalHuman()
             }
             WelcomeActivity.RESULT_CLOUD_CHOICE -> {
-                Toast.makeText(this, "您选择了云端数字人模式", Toast.LENGTH_LONG).show()
-                // TODO: 可以在这里检查网络连接或设置云端配置
+                // 用户选择云端数字人
+                routeToCloudDigitalHuman()
             }
             else -> {
-                // 用户取消选择
-                Toast.makeText(this, "已取消选择", Toast.LENGTH_SHORT).show()
+                // 用户取消选择，退出应用
+                finish()
             }
         }
     }
 
-    val models = arrayListOf(
-        "https://github.com/duixcom/Duix-Mobile/releases/download/v1.0.0/bendi3_20240518.zip",
-        "https://github.com/duixcom/Duix-Mobile/releases/download/v1.0.0/airuike_20240409.zip",
-        "https://github.com/duixcom/Duix-Mobile/releases/download/v1.0.0/675429759852613_7f8d9388a4213080b1820b83dd057cfb_optim_m80.zip",
-        "https://github.com/duixcom/Duix-Mobile/releases/download/v1.0.0/674402003804229_f6e86fb375c4f1f1b82b24f7ee4e7cb4_optim_m80.zip",
-        "https://github.com/duixcom/Duix-Mobile/releases/download/v1.0.0/674400178376773_3925e756433c5a9caa9b9d54147ae4ab_optim_m80.zip",
-        "https://github.com/duixcom/Duix-Mobile/releases/download/v1.0.0/674397294927941_6e297e18a4bdbe35c07a6ae48a1f021f_optim_m80.zip",
-        "https://github.com/duixcom/Duix-Mobile/releases/download/v1.0.0/674393494597701_f49fcf68f5afdb241d516db8a7d88a7b_optim_m80.zip",
-        "https://github.com/duixcom/Duix-Mobile/releases/download/v1.0.0/651705983152197_ccf3256b2449c76e77f94276dffcb293_optim_m80.zip",
-        "https://github.com/duixcom/Duix-Mobile/releases/download/v1.0.0/627306542239813_1871244b5e6912efc636ba31ea4c5c6d_optim_m80.zip",
-    )
-
-    private var mBaseConfigUrl = ""
-    private var mModelUrl = ""
-
-    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
 
-        binding.tvSdkVersion.text = "SDK Version: ${BuildConfig.VERSION_NAME}"
-
-        // 检查是否需要显示欢迎页面
-        checkAndShowWelcomePage()
-
-        setupUI()
+        // MainActivity作为路由器，不需要UI
+        // 直接根据状态进行路由
+        checkAndRoute()
     }
 
     /**
-     * 检查并显示欢迎页面
+     * 检查状态并进行路由
      */
-    private fun checkAndShowWelcomePage() {
+    private fun checkAndRoute() {
         if (WelcomeConfig.shouldShowWelcomePage(this)) {
-            // 启动欢迎页面
-            val intent = Intent(this, WelcomeActivity::class.java)
-            welcomeActivityLauncher.launch(intent)
+            // 第一次启动或用户清除了选择，显示欢迎页面
+            showWelcomePage()
         } else {
-            // 用户已经做过选择，根据选择显示相应提示
-            showUserChoiceInfo()
+            // 用户已经做过选择，直接根据选择路由
+            routeBasedOnUserChoice()
         }
     }
 
     /**
-     * 显示用户选择信息
+     * 显示欢迎页面
      */
-    private fun showUserChoiceInfo() {
+    private fun showWelcomePage() {
+        val intent = Intent(this, WelcomeActivity::class.java)
+        welcomeActivityLauncher.launch(intent)
+    }
+
+    /**
+     * 根据用户历史选择进行路由
+     */
+    private fun routeBasedOnUserChoice() {
         val userChoice = WelcomeConfig.getUserChoiceEnum(this)
         when (userChoice) {
             WelcomeConfig.UserChoice.LOCAL -> {
-                Toast.makeText(this, "当前模式：本地数字人", Toast.LENGTH_SHORT).show()
+                routeToLocalDigitalHuman()
             }
             WelcomeConfig.UserChoice.CLOUD -> {
-                Toast.makeText(this, "当前模式：云端数字人", Toast.LENGTH_SHORT).show()
+                routeToCloudDigitalHuman()
             }
             else -> {
-                // 理论上不应该到这里
-                Toast.makeText(this, "未检测到选择，将重新显示欢迎页面", Toast.LENGTH_SHORT).show()
-                checkAndShowWelcomePage()
+                // 未检测到有效选择，重新显示欢迎页面
+                showWelcomePage()
             }
         }
     }
 
     /**
-     * 设置UI组件
+     * 路由到本地数字人界面
      */
-    private fun setupUI() {
-        binding.btnMoreModel.setOnClickListener {
-            val modelSelectorDialog = ModelSelectorDialog(mContext, models, object : ModelSelectorDialog.Listener{
-                override fun onSelect(url: String) {
-                    binding.etUrl.setText(url)
-                }
-            })
-            modelSelectorDialog.show()
-        }
-        binding.btnPlay.setOnClickListener {
-            play()
-        }
-    }
-
-    private fun play(){
-        mBaseConfigUrl = binding.etBaseConfig.text.toString()
-        mModelUrl = binding.etUrl.text.toString()
-        if (TextUtils.isEmpty(mBaseConfigUrl)){
-            Toast.makeText(mContext, R.string.base_config_cannot_be_empty, Toast.LENGTH_SHORT).show()
-            return
-        }
-        if (TextUtils.isEmpty(mModelUrl)){
-            Toast.makeText(mContext, R.string.model_url_cannot_be_empty, Toast.LENGTH_SHORT).show()
-            return
-        }
-        checkBaseConfig()
-    }
-
-    private fun checkBaseConfig(){
-        if (VirtualModelUtil.checkBaseConfig(mContext)){
-            checkModel()
-        } else {
-            baseConfigDownload()
-        }
-    }
-
-    private fun checkModel(){
-        if (VirtualModelUtil.checkModel(mContext, mModelUrl)){
-            jumpPlayPage()
-        } else {
-            modelDownload()
-        }
-    }
-
-    private fun jumpPlayPage(){
-        val intent = Intent(mContext, CallActivity::class.java)
-        intent.putExtra("modelUrl", mModelUrl)
-        val debug = binding.switchDebug.isChecked
-        intent.putExtra("debug", debug)
+    private fun routeToLocalDigitalHuman() {
+        val intent = Intent(this, LocalMainActivity::class.java)
         startActivity(intent)
+        finish()
     }
 
-    private fun baseConfigDownload(){
-        mLoadingDialog?.dismiss()
-        mLoadingDialog = LoadingDialog(mContext, "Start downloading")
-        mLoadingDialog?.show()
-        VirtualModelUtil.baseConfigDownload(mContext, mBaseConfigUrl, object :
-            VirtualModelUtil.ModelDownloadCallback {
-            override fun onDownloadProgress(url: String?, current: Long, total: Long) {
-                val progress = (current * 100 / total).toInt()
-                if (progress != mLastProgress){
-                    mLastProgress = progress
-                    runOnUiThread {
-                        if (mLoadingDialog?.isShowing == true){
-                            mLoadingDialog?.setContent("Config download(${progress}%)")
-                        }
-                    }
-                }
-            }
-
-            override fun onUnzipProgress(url: String?, current: Long, total: Long) {
-                val progress = (current * 100 / total).toInt()
-                if (progress != mLastProgress){
-                    mLastProgress = progress
-                    runOnUiThread {
-                        if (mLoadingDialog?.isShowing == true){
-                            mLoadingDialog?.setContent("Config unzip(${progress}%)")
-                        }
-                    }
-                }
-            }
-
-            override fun onDownloadComplete(url: String?, dir: File?) {
-                runOnUiThread {
-                    mLoadingDialog?.dismiss()
-                    checkModel()
-                }
-            }
-
-            override fun onDownloadFail(url: String?, code: Int, msg: String?) {
-                runOnUiThread {
-                    mLoadingDialog?.dismiss()
-                    Toast.makeText(mContext, "BaseConfig download error: $msg", Toast.LENGTH_SHORT).show()
-                }
-            }
-
-        })
+    /**
+     * 路由到云端数字人界面
+     */
+    private fun routeToCloudDigitalHuman() {
+        val intent = Intent(this, CloudMainActivity::class.java)
+        startActivity(intent)
+        finish()
     }
-
-    private fun modelDownload(){
-        mLoadingDialog?.dismiss()
-        mLoadingDialog = LoadingDialog(mContext, "Start downloading")
-        mLoadingDialog?.show()
-        VirtualModelUtil.modelDownload(mContext, mModelUrl, object : VirtualModelUtil.ModelDownloadCallback{
-            override fun onDownloadProgress(
-                url: String?,
-                current: Long,
-                total: Long,
-            ) {
-                val progress = (current * 100 / total).toInt()
-                if (progress != mLastProgress){
-                    mLastProgress = progress
-                    runOnUiThread {
-                        if (mLoadingDialog?.isShowing == true){
-                            mLoadingDialog?.setContent("Model download(${progress}%)")
-                        }
-                    }
-                }
-            }
-
-            override fun onUnzipProgress(
-                url: String?,
-                current: Long,
-                total: Long,
-            ) {
-                val progress = (current * 100 / total).toInt()
-                if (progress != mLastProgress){
-                    mLastProgress = progress
-                    runOnUiThread {
-                        if (mLoadingDialog?.isShowing == true){
-                            mLoadingDialog?.setContent("Model unzip(${progress}%)")
-                        }
-                    }
-                }
-            }
-
-            override fun onDownloadComplete(url: String?, dir: File?) {
-                runOnUiThread {
-                    mLoadingDialog?.dismiss()
-                    jumpPlayPage()
-                }
-            }
-
-            override fun onDownloadFail(
-                url: String?,
-                code: Int,
-                msg: String?,
-            ) {
-                runOnUiThread {
-                    mLoadingDialog?.dismiss()
-                    Toast.makeText(mContext, "Model download error: $msg", Toast.LENGTH_SHORT).show()
-                }
-            }
-
-        })
-    }
-
 }

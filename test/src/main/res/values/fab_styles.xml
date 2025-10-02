@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 返回主界面的FloatingActionButton样式 -->
+    <style name="BackToHomeFAB">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">@dimen/fab_back_button_margin</item>
+        <item name="android:contentDescription">@string/back_to_home</item>
+        <item name="elevation">@dimen/fab_back_button_elevation</item>
+    </style>
+
+    <!-- 播放界面的半透明返回按钮样式 -->
+    <style name="BackToHomeFAB.Transparent">
+        <item name="android:alpha">0.85</item>
+        <item name="backgroundTint">#80000000</item>
+        <item name="tint">@android:color/white</item>
+    </style>
+</resources>

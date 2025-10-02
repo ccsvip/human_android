@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 返回按钮相关尺寸 -->
+    <dimen name="fab_back_button_margin">24dp</dimen>
+    <dimen name="fab_back_button_size">56dp</dimen>
+    <dimen name="fab_back_button_elevation">6dp</dimen>
+</resources>

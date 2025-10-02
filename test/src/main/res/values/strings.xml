@@ -19,4 +19,8 @@
     <string name="play_stop">Stop playing</string>
     <string name="main_download_tips">The GitHub url may fail to download, you can consider using a proxy or caching the file to your own storage service</string>
     <string name="debug_message">Debug message</string>
+
+    <!-- 返回按钮相关字符串 -->
+    <string name="back_to_home">返回主界面</string>
+    <string name="back_to_home_desc">点击返回到选择界面</string>
 </resources>

@@ -24,9 +24,21 @@
             </intent-filter>
         </activity>
 
-        <!-- 数字人播放Activity -->
+        <!-- 本地数字人配置Activity -->
         <activity
-            android:name=".ui.activity.CallActivity"
+            android:name=".ui.activity.local.LocalMainActivity"
+            android:exported="false">
+        </activity>
+
+        <!-- 本地数字人播放Activity -->
+        <activity
+            android:name=".ui.activity.local.LocalCallActivity"
+            android:exported="false">
+        </activity>
+
+        <!-- 云端数字人Activity -->
+        <activity
+            android:name=".ui.activity.cloud.CloudMainActivity"
             android:exported="false">
         </activity>
 

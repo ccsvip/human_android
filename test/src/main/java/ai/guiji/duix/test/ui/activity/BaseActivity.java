@@ -1,5 +1,6 @@
 package ai.guiji.duix.test.ui.activity;
 
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -15,6 +16,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+
+import ai.guiji.duix.sdk.welcome.WelcomeConfig;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -113,6 +116,30 @@ public abstract class BaseActivity extends AppCompatActivity implements Handler.
     //申请权限回调
     public void permissionsGet(boolean get, int code) {
 
+    }
+
+    /**
+     * 返回主界面（重新显示选择界面）
+     *
+     * 功能：
+     * - 重置欢迎页面配置
+     * - 启动MainActivity并清空任务栈
+     * - 用户可以重新选择本地或云端数字人
+     *
+     * 使用场景：
+     * - 本地数字人配置界面
+     * - 本地数字人播放界面
+     * - 云端数字人界面
+     */
+    protected void backToMainMenu() {
+        // 重置欢迎页面配置，以便重新显示WelcomeActivity
+        WelcomeConfig.INSTANCE.resetWelcomeConfig(this);
+
+        // 返回MainActivity，它会重新显示WelcomeActivity
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        finish();
     }
 
 
