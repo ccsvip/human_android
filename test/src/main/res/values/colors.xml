@@ -9,4 +9,14 @@
     <color name="white">#FFFFFFFF</color>
     <color name="primary">#5a7bbe</color>
     <color name="primary_99">#995a7bbe</color>
+
+    <!-- 本地数字人配置界面颜色 -->
+    <color name="local_main_background">#F5F5F5</color>
+    <color name="local_main_input_bg">#FFFFFF</color>
+    <color name="local_main_input_border">#E0E0E0</color>
+    <color name="local_main_text_primary">#333333</color>
+    <color name="local_main_text_secondary">#666666</color>
+    <color name="local_main_text_hint">#999999</color>
+    <color name="local_main_gradient_start">#667eea</color>
+    <color name="local_main_gradient_end">#764ba2</color>
 </resources>

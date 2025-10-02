@@ -4,4 +4,13 @@
     <dimen name="fab_back_button_margin">24dp</dimen>
     <dimen name="fab_back_button_size">56dp</dimen>
     <dimen name="fab_back_button_elevation">6dp</dimen>
+
+    <!-- 本地数字人配置界面尺寸 -->
+    <dimen name="local_main_input_corner">16dp</dimen>
+    <dimen name="local_main_input_height">56dp</dimen>
+    <dimen name="local_main_button_corner">16dp</dimen>
+    <dimen name="local_main_button_height">56dp</dimen>
+    <dimen name="local_main_section_margin">16dp</dimen>
+    <dimen name="local_main_content_padding">24dp</dimen>
+    <dimen name="local_main_section_corner">12dp</dimen>
 </resources>

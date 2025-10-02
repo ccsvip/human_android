@@ -6,22 +6,26 @@
  * - 配置基础配置文件
  * - 跳转到本地数字人播放界面
  * - 提供返回主界面按钮
+ * - 采用模块化设计，符合CLAUDE.md规范
+ *
+ * 设计原则：
+ * - 单一职责: 每个函数只负责一个功能
+ * - UI与业务分离: UI事件处理和业务逻辑分离
+ * - 清晰注释: 每个函数都有清晰的功能说明
  */
 package ai.guiji.duix.test.ui.activity.local
 
-import ai.guiji.duix.sdk.client.BuildConfig
 import ai.guiji.duix.sdk.client.VirtualModelUtil
-import ai.guiji.duix.sdk.welcome.WelcomeConfig
 import ai.guiji.duix.test.R
 import ai.guiji.duix.test.databinding.ActivityLocalMainBinding
 import ai.guiji.duix.test.ui.activity.BaseActivity
-import ai.guiji.duix.test.ui.activity.MainActivity
 import ai.guiji.duix.test.ui.dialog.LoadingDialog
 import ai.guiji.duix.test.ui.dialog.ModelSelectorDialog
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
+import android.view.View
 import android.widget.Toast
 import java.io.File
 
@@ -31,7 +35,9 @@ class LocalMainActivity : BaseActivity() {
     private lateinit var binding: ActivityLocalMainBinding
     private var mLoadingDialog: LoadingDialog? = null
     private var mLastProgress = 0
+    private var isAdvancedExpanded = false
 
+    // 可选模型列表
     val models = arrayListOf(
         "https://github.com/duixcom/Duix-Mobile/releases/download/v1.0.0/bendi3_20240518.zip",
         "https://github.com/duixcom/Duix-Mobile/releases/download/v1.0.0/airuike_20240409.zip",
@@ -47,19 +53,27 @@ class LocalMainActivity : BaseActivity() {
     private var mBaseConfigUrl = ""
     private var mModelUrl = ""
 
-    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityLocalMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.tvSdkVersion.text = "SDK Version: ${BuildConfig.VERSION_NAME}"
-
+        setupDefaultValues()
         setupUI()
     }
 
     /**
+     * 设置默认值
+     * 功能: 初始化默认的配置URL
+     */
+    private fun setupDefaultValues() {
+        // 使用默认的baseConfig URL(不再从UI获取)
+        mBaseConfigUrl = "https://github.com/duixcom/Duix-Mobile/releases/download/v1.0.0/gj_dh_res.zip"
+    }
+
+    /**
      * 设置UI组件
+     * 功能: 绑定所有UI控件的事件监听器
      */
     private fun setupUI() {
         // 返回主界面按钮
@@ -67,44 +81,132 @@ class LocalMainActivity : BaseActivity() {
             backToMainMenu()
         }
 
-        binding.btnMoreModel.setOnClickListener {
-            val modelSelectorDialog = ModelSelectorDialog(mContext, models, object : ModelSelectorDialog.Listener{
-                override fun onSelect(url: String) {
-                    binding.etUrl.setText(url)
-                }
-            })
-            modelSelectorDialog.show()
+        // 刷新按钮
+        binding.ivRefresh.setOnClickListener {
+            refreshAddress()
         }
 
-        binding.btnPlay.setOnClickListener {
+        // 模型选择下拉框
+        binding.tvModelSelector.setOnClickListener {
+            showModelSelectorDialog()
+        }
+
+        binding.layoutModel.setOnClickListener {
+            showModelSelectorDialog()
+        }
+
+        // 应用选择下拉框(预留功能)
+        binding.tvAppSelector.setOnClickListener {
+            showAppSelectorDialog()
+        }
+
+        binding.layoutApp.setOnClickListener {
+            showAppSelectorDialog()
+        }
+
+        // 高级设置展开/收起
+        binding.tvAdvancedToggle.setOnClickListener {
+            toggleAdvancedSettings()
+        }
+
+        // 启动按钮
+        binding.btnStart.setOnClickListener {
             play()
         }
     }
 
-    private fun play(){
-        mBaseConfigUrl = binding.etBaseConfig.text.toString()
-        mModelUrl = binding.etUrl.text.toString()
-        if (TextUtils.isEmpty(mBaseConfigUrl)){
+    /**
+     * 刷新地址
+     * 功能: 清空或重置输入地址
+     */
+    private fun refreshAddress() {
+        Toast.makeText(mContext, "刷新地址", Toast.LENGTH_SHORT).show()
+        // 可选: 清空输入框或重置为默认值
+        // binding.etAddress.setText("")
+    }
+
+    /**
+     * 显示模型选择对话框
+     * 功能: 弹出模型选择对话框，选择后更新UI和地址
+     */
+    private fun showModelSelectorDialog() {
+        val modelSelectorDialog = ModelSelectorDialog(mContext, models, object : ModelSelectorDialog.Listener {
+            override fun onSelect(url: String) {
+                binding.etAddress.setText(url)
+                // 更新模型选择显示
+                val modelName = extractModelName(url)
+                binding.tvModelSelector.text = modelName
+                binding.tvModelSelector.setTextColor(getColor(R.color.local_main_text_primary))
+            }
+        })
+        modelSelectorDialog.show()
+    }
+
+    /**
+     * 显示应用选择对话框
+     * 功能: 预留功能，暂时显示提示信息
+     */
+    private fun showAppSelectorDialog() {
+        Toast.makeText(mContext, "应用选择功能开发中", Toast.LENGTH_SHORT).show()
+        // 预留: 可在此添加应用选择逻辑
+        // 示例: 选择不同的使用场景(语音助手、虚拟主播等)
+    }
+
+    /**
+     * 从URL提取模型名称
+     * 功能: 从完整URL中提取模型文件名
+     */
+    private fun extractModelName(url: String): String {
+        val fileName = url.substringAfterLast("/").substringBeforeLast(".zip")
+        return fileName.ifEmpty { "已选择模型" }
+    }
+
+    /**
+     * 切换高级设置展开/收起状态
+     * 功能: 显示或隐藏高级设置面板，点击直接展示内容
+     */
+    private fun toggleAdvancedSettings() {
+        isAdvancedExpanded = !isAdvancedExpanded
+        binding.layoutAdvanced.visibility = if (isAdvancedExpanded) View.VISIBLE else View.GONE
+    }
+
+    /**
+     * 开始播放流程
+     * 功能: 验证输入并启动下载检查流程
+     */
+    private fun play() {
+        // mBaseConfigUrl已在setupDefaultValues中设置
+        mModelUrl = binding.etAddress.text.toString()
+
+        if (TextUtils.isEmpty(mBaseConfigUrl)) {
             Toast.makeText(mContext, R.string.base_config_cannot_be_empty, Toast.LENGTH_SHORT).show()
             return
         }
-        if (TextUtils.isEmpty(mModelUrl)){
+        if (TextUtils.isEmpty(mModelUrl)) {
             Toast.makeText(mContext, R.string.model_url_cannot_be_empty, Toast.LENGTH_SHORT).show()
             return
         }
         checkBaseConfig()
     }
 
-    private fun checkBaseConfig(){
-        if (VirtualModelUtil.checkBaseConfig(mContext)){
+    /**
+     * 检查基础配置是否存在
+     * 功能: 检查本地是否已有基础配置文件
+     */
+    private fun checkBaseConfig() {
+        if (VirtualModelUtil.checkBaseConfig(mContext)) {
             checkModel()
         } else {
             baseConfigDownload()
         }
     }
 
-    private fun checkModel(){
-        if (VirtualModelUtil.checkModel(mContext, mModelUrl)){
+    /**
+     * 检查模型是否存在
+     * 功能: 检查本地是否已有选择的模型文件
+     */
+    private fun checkModel() {
+        if (VirtualModelUtil.checkModel(mContext, mModelUrl)) {
             jumpPlayPage()
         } else {
             modelDownload()
@@ -113,8 +215,9 @@ class LocalMainActivity : BaseActivity() {
 
     /**
      * 跳转到播放界面
+     * 功能: 启动本地数字人播放Activity
      */
-    private fun jumpPlayPage(){
+    private fun jumpPlayPage() {
         val intent = Intent(mContext, LocalCallActivity::class.java)
         intent.putExtra("modelUrl", mModelUrl)
         val debug = binding.switchDebug.isChecked
@@ -122,7 +225,11 @@ class LocalMainActivity : BaseActivity() {
         startActivity(intent)
     }
 
-    private fun baseConfigDownload(){
+    /**
+     * 下载基础配置文件
+     * 功能: 从URL下载并解压基础配置
+     */
+    private fun baseConfigDownload() {
         mLoadingDialog?.dismiss()
         mLoadingDialog = LoadingDialog(mContext, "Start downloading")
         mLoadingDialog?.show()
@@ -130,10 +237,10 @@ class LocalMainActivity : BaseActivity() {
             VirtualModelUtil.ModelDownloadCallback {
             override fun onDownloadProgress(url: String?, current: Long, total: Long) {
                 val progress = (current * 100 / total).toInt()
-                if (progress != mLastProgress){
+                if (progress != mLastProgress) {
                     mLastProgress = progress
                     runOnUiThread {
-                        if (mLoadingDialog?.isShowing == true){
+                        if (mLoadingDialog?.isShowing == true) {
                             mLoadingDialog?.setContent("Config download(${progress}%)")
                         }
                     }
@@ -142,10 +249,10 @@ class LocalMainActivity : BaseActivity() {
 
             override fun onUnzipProgress(url: String?, current: Long, total: Long) {
                 val progress = (current * 100 / total).toInt()
-                if (progress != mLastProgress){
+                if (progress != mLastProgress) {
                     mLastProgress = progress
                     runOnUiThread {
-                        if (mLoadingDialog?.isShowing == true){
+                        if (mLoadingDialog?.isShowing == true) {
                             mLoadingDialog?.setContent("Config unzip(${progress}%)")
                         }
                     }
@@ -169,21 +276,25 @@ class LocalMainActivity : BaseActivity() {
         })
     }
 
-    private fun modelDownload(){
+    /**
+     * 下载模型文件
+     * 功能: 从URL下载并解压数字人模型
+     */
+    private fun modelDownload() {
         mLoadingDialog?.dismiss()
         mLoadingDialog = LoadingDialog(mContext, "Start downloading")
         mLoadingDialog?.show()
-        VirtualModelUtil.modelDownload(mContext, mModelUrl, object : VirtualModelUtil.ModelDownloadCallback{
+        VirtualModelUtil.modelDownload(mContext, mModelUrl, object : VirtualModelUtil.ModelDownloadCallback {
             override fun onDownloadProgress(
                 url: String?,
                 current: Long,
                 total: Long,
             ) {
                 val progress = (current * 100 / total).toInt()
-                if (progress != mLastProgress){
+                if (progress != mLastProgress) {
                     mLastProgress = progress
                     runOnUiThread {
-                        if (mLoadingDialog?.isShowing == true){
+                        if (mLoadingDialog?.isShowing == true) {
                             mLoadingDialog?.setContent("Model download(${progress}%)")
                         }
                     }
@@ -196,10 +307,10 @@ class LocalMainActivity : BaseActivity() {
                 total: Long,
             ) {
                 val progress = (current * 100 / total).toInt()
-                if (progress != mLastProgress){
+                if (progress != mLastProgress) {
                     mLastProgress = progress
                     runOnUiThread {
-                        if (mLoadingDialog?.isShowing == true){
+                        if (mLoadingDialog?.isShowing == true) {
                             mLoadingDialog?.setContent("Model unzip(${progress}%)")
                         }
                     }

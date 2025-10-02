@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  启动按钮渐变背景
+  用于: 本地数字人配置界面的启动按钮
+  渐变色: #667eea → #764ba2 (紫色渐变)
+-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <corners android:radius="16dp" />
+    <gradient
+        android:angle="0"
+        android:startColor="#667eea"
+        android:endColor="#764ba2"
+        android:type="linear" />
+</shape>

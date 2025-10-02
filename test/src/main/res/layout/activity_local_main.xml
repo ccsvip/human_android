@@ -1,124 +1,185 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!--
+  本地数字人配置界面布局
+  功能: 提供本地数字人模型的配置和下载界面
+  设计: 采用现代化卡片式设计，符合Material Design规范
+-->
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="12dp">
+    android:background="@color/local_main_background">
 
+    <!-- 标题 -->
     <TextView
-        android:id="@+id/tv_title"
+        android:id="@+id/tvTitle"
         android:layout_width="match_parent"
-        android:layout_height="120dp"
+        android:layout_height="wrap_content"
+        android:text="@string/local_main_title"
+        android:textSize="20sp"
+        android:textColor="@color/local_main_text_primary"
+        android:textStyle="bold"
         android:gravity="center"
-        android:text="@string/app_name"
-        android:textColor="@color/black"
-        android:textSize="18sp"
-        android:textStyle="italic|bold"
+        android:paddingTop="24dp"
+        android:paddingBottom="24dp"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/tv_sdk_version"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="12sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_title" />
-
+    <!-- 主内容区ScrollView -->
     <ScrollView
+        android:id="@+id/scrollContent"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_sdk_version">
+        android:fillViewport="true"
+        app:layout_constraintTop_toBottomOf="@id/tvTitle"
+        app:layout_constraintBottom_toBottomOf="parent">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/local_main_content_padding">
 
+            <!-- 输入地址 -->
             <TextView
-                android:id="@+id/tvDownloadTips"
-                app:layout_constraintTop_toTopOf="parent"
-                android:text="@string/main_download_tips"
-                android:textSize="13sp"
-                android:textColor="@color/black"
-                android:textStyle="bold"
+                android:id="@+id/labelAddress"
+                style="@style/LocalMainLabel"
+                android:text="@string/local_main_input_address"
+                android:layout_marginTop="0dp" />
+
+            <RelativeLayout
+                android:id="@+id/layoutAddress"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content">
 
+                <EditText
+                    android:id="@+id/etAddress"
+                    style="@style/LocalMainInputField"
+                    android:hint="@string/model_url"
+                    android:inputType="textUri"
+                    android:text="https://github.com/duixcom/Duix-Mobile/releases/download/v1.0.0/bendi3_20240518.zip" />
+
+                <ImageView
+                    android:id="@+id/ivRefresh"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="8dp"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_refresh"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="刷新" />
+            </RelativeLayout>
+
+            <!-- 模型选择 -->
             <TextView
-                android:id="@+id/tvBaseConfig"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:text="@string/base_config_url"
-                android:textSize="13sp"
-                app:layout_constraintTop_toBottomOf="@+id/tvDownloadTips"
-                app:layout_constraintStart_toStartOf="parent"/>
+                android:id="@+id/labelModel"
+                style="@style/LocalMainLabel"
+                android:text="@string/local_main_model_select" />
 
-            <EditText
-                android:id="@+id/etBaseConfig"
-                android:layout_marginTop="12dp"
+            <RelativeLayout
+                android:id="@+id/layoutModel"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:text="https://github.com/duixcom/Duix-Mobile/releases/download/v1.0.0/gj_dh_res.zip"
-                android:textSize="13sp"
-                app:layout_constraintTop_toBottomOf="@+id/tvBaseConfig"
-                />
-
-            <TextView
-                android:id="@+id/tvModelUrl"
-                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
-                android:text="@string/model_url"
-                android:textSize="13sp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/etBaseConfig"  />
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackground">
 
+                <TextView
+                    android:id="@+id/tvModelSelector"
+                    style="@style/LocalMainDropdown"
+                    android:text="@string/local_main_model_hint"
+                    android:textColor="@color/local_main_text_hint"
+                    android:clickable="false" />
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="8dp"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_dropdown"
+                    android:clickable="false"
+                    android:contentDescription="展开" />
+            </RelativeLayout>
+
+            <!-- 应用选择 -->
+            <TextView
+                android:id="@+id/labelApp"
+                style="@style/LocalMainLabel"
+                android:text="@string/local_main_app_select" />
+
+            <RelativeLayout
+                android:id="@+id/layoutApp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackground">
+
+                <TextView
+                    android:id="@+id/tvAppSelector"
+                    style="@style/LocalMainDropdown"
+                    android:text="@string/local_main_app_hint"
+                    android:textColor="@color/local_main_text_hint"
+                    android:clickable="false" />
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="8dp"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_dropdown"
+                    android:clickable="false"
+                    android:contentDescription="展开" />
+            </RelativeLayout>
+
+            <!-- 高级设置 -->
+            <TextView
+                android:id="@+id/tvAdvancedToggle"
+                style="@style/LocalMainLabel"
+                android:text="@string/local_main_advanced_settings"
+                android:drawableEnd="@drawable/ic_dropdown"
+                android:drawablePadding="8dp"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="8dp"
+                android:layout_marginStart="-8dp" />
+
+            <LinearLayout
+                android:id="@+id/layoutAdvanced"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_section_rounded"
+                android:padding="16dp"
+                android:layout_marginTop="8dp"
+                android:visibility="gone">
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/switchDebug"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/debug_message"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
+
+            <!-- 启动按钮 -->
             <Button
-                android:id="@+id/btnMoreModel"
-                android:text="@string/more"
-                android:layout_marginTop="12dp"
-                android:layout_width="wrap_content"
-                android:layout_height="48dp"
-                app:layout_constraintTop_toBottomOf="@+id/tvModelUrl"
-                app:layout_constraintEnd_toEndOf="parent"
-                />
+                android:id="@+id/btnStart"
+                style="@style/LocalMainButton"
+                android:text="@string/local_main_start_button" />
 
-            <EditText
-                android:id="@+id/etUrl"
-                android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:text="https://github.com/duixcom/Duix-Mobile/releases/download/v1.0.0/bendi3_20240518.zip"
-                android:textSize="13sp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/btnMoreModel"
-                app:layout_constraintEnd_toStartOf="@+id/btnMoreModel"
-                />
-
-            <Button
-                android:id="@+id/btnPlay"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:layout_marginTop="20dp"
-                android:text="@string/play"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/etUrl" />
-
-            <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/switchDebug"
-                android:text="@string/debug_message"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="13sp"
-                android:layout_margin="12dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/btnPlay"
-                />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
     </ScrollView>
 
-    <!-- 底部FloatingActionButton返回按钮 -->
+    <!-- 返回主界面按钮 -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabBackToHome"
         style="@style/BackToHomeFAB"
