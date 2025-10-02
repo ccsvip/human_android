@@ -180,6 +180,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - 为了方便溯源，每解决一个问题之后，都需要在 根目录 `docs`目录下面新建一个对应的文档加上当天日期，去记录解决了什么问题，日期格式必须是`YYYY-MM-DD`。
 > 比如：`环境初初始化-2025-09-29.md`
 - 编译错误必须修复，编译警告比如w:xx开头的也必须修复，不能够忽略。
+- 代码有进行修改，都必须同步更新 @项目说明.md  以及 依赖分析报告.md
 
 ### 关于TODO
 - 非必要禁止写TODO，写了就必须解决，而不是一直放着。
