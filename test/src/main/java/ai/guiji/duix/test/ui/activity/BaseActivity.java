@@ -1,5 +1,6 @@
 package ai.guiji.duix.test.ui.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -17,6 +18,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import ai.guiji.duix.sdk.i18n.LanguageManager;
 import ai.guiji.duix.sdk.welcome.WelcomeConfig;
 
 import java.util.ArrayList;
@@ -36,6 +38,14 @@ public abstract class BaseActivity extends AppCompatActivity implements Handler.
         HandlerThread mHandlerThread = new HandlerThread(TAG);
         mHandlerThread.start();
         mHandler = new Handler(mHandlerThread.getLooper(), this);
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        // 应用语言设置
+        LanguageManager.Language language = LanguageManager.INSTANCE.getCurrentLanguage(newBase);
+        Context context = LanguageManager.INSTANCE.applyLanguage(newBase, language);
+        super.attachBaseContext(context);
     }
 
     @Override

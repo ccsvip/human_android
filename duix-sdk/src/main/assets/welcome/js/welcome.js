@@ -1,18 +1,13 @@
 /**
  * 欢迎页面交互逻辑
- * TODO: 后续可扩展更多配置选项和动画效果
  */
 
-// Logo配置对象 - TODO: 后续可通过接口或配置文件动态加载
+// Logo配置对象
 const LogoConfig = {
-    // TODO: 支持动态配置logo图标路径
     iconPath: './images/default_digital_human.svg',
-    // TODO: 支持主题色配置
     iconColor: '#3B82F6',
     lightEffectEnabled: true,
-    // TODO: 根据设备性能自动调整光效
     lightEffectColor: '#3B82F6',
-    // TODO: 提供光效动画自定义选项
     lightEffectIntensity: 'medium' // low, medium, high
 };
 
@@ -28,6 +23,47 @@ const WelcomeConfig = {
     // 调试模式
     debugMode: false
 };
+
+/**
+ * 语言切换：切换下拉菜单显示/隐藏
+ */
+function toggleLanguageDropdown() {
+    const dropdown = document.getElementById('languageDropdown');
+    dropdown.classList.toggle('show');
+}
+
+/**
+ * 语言切换：选择语言
+ */
+function changeLanguage(lang) {
+    // 隐藏下拉菜单
+    const dropdown = document.getElementById('languageDropdown');
+    if (dropdown) {
+        dropdown.classList.remove('show');
+    }
+
+    // 调用Android接口切换语言
+    if (window.AndroidInterface && window.AndroidInterface.changeLanguage) {
+        window.AndroidInterface.changeLanguage(lang);
+    } else {
+        // 如果没有Android接口，使用i18n.js的方式
+        if (typeof setLanguage === 'function') {
+            setLanguage(lang);
+        }
+    }
+}
+
+/**
+ * 点击其他区域关闭语言下拉菜单
+ */
+document.addEventListener('click', function(event) {
+    const languageSelector = document.querySelector('.language-selector-bottom');
+    const dropdown = document.getElementById('languageDropdown');
+
+    if (languageSelector && dropdown && !languageSelector.contains(event.target)) {
+        dropdown.classList.remove('show');
+    }
+});
 
 /**
  * 用户选择处理函数
@@ -85,7 +121,10 @@ function simulatePageTransition(choice) {
  * 页面初始化
  */
 function initWelcomePage() {
-    // TODO: 根据设备性能调整光效强度
+    // 初始化国际化
+    initI18n();
+
+    // 根据设备性能调整光效强度
     if (LogoConfig.lightEffectEnabled) {
         adjustLightEffects();
     }
@@ -106,11 +145,32 @@ function initWelcomePage() {
 }
 
 /**
+ * 初始化国际化
+ */
+function initI18n() {
+    // 从Android获取当前语言设置
+    if (typeof AndroidInterface !== 'undefined' && typeof AndroidInterface.getCurrentLanguage === 'function') {
+        const lang = AndroidInterface.getCurrentLanguage();
+        if (lang) {
+            setLanguage(lang);
+            // 更新下拉菜单中的选中状态
+            const options = document.querySelectorAll('.language-option');
+            options.forEach(option => {
+                if (option.getAttribute('data-lang') === lang) {
+                    option.classList.add('active');
+                } else {
+                    option.classList.remove('active');
+                }
+            });
+        }
+    }
+}
+
+/**
  * 根据设备性能调整光效
- * TODO: 实现性能检测和自动调整
  */
 function adjustLightEffects() {
-    // 简单的性能检测 - 后续可扩展
+    // 简单的性能检测
     const isLowPerformance = window.navigator.hardwareConcurrency < 4;
 
     if (isLowPerformance && LogoConfig.lightEffectIntensity === 'high') {
@@ -181,10 +241,3 @@ document.addEventListener('touchmove', function(e) {
         e.preventDefault();
     }
 }, { passive: false });
-
-// TODO: 后续可添加更多功能
-// - 主题切换（浅色/深色模式）
-// - 语言切换
-// - 无障碍支持
-// - 更丰富的动画效果
-// - 统计和分析埋点

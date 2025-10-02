@@ -1,27 +1,71 @@
 <resources>
+    <!-- 应用名称 -->
     <string name="app_name">DUIX Demo</string>
+
+    <!-- 通用按钮 -->
     <string name="play">播放</string>
-    <string name="base_config_url">基础配置Url:</string>
-    <string name="model_url">模型Url:</string>
     <string name="more">更多</string>
-    <string name="base_config_cannot_be_empty">基础配置url不能为空</string>
-    <string name="model_url_cannot_be_empty">模型url不能为空</string>
     <string name="loading">加载中...</string>
     <string name="mute">静音</string>
-    <string name="ai_tips">本内容由AI生成，仅供参考</string>
-    <string name="support_actions">支持的动作:</string>
     <string name="record">录音</string>
+
+    <!-- 配置相关 -->
+    <string name="base_config_url">基础配置Url:</string>
+    <string name="model_url">模型Url:</string>
+    <string name="base_config_cannot_be_empty">基础配置url不能为空</string>
+    <string name="model_url_cannot_be_empty">模型url不能为空</string>
+
+    <!-- 提示信息 -->
+    <string name="ai_tips">本内容由AI生成，仅供参考</string>
+    <string name="main_download_tips">Github地址可能下载失败，您可以考虑使用代理或者将文件缓存到自己的存储服务</string>
+    <string name="need_permission_continue">需要授权以继续使用</string>
+
+    <!-- 动作相关 -->
+    <string name="support_actions">支持的动作:</string>
     <string name="play_pcm">播放PCM流</string>
     <string name="play_wav">播放WAV文件</string>
     <string name="random_play_action">随机播放动作</string>
-    <string name="touch_me_record">按住我收音</string>
-    <string name="need_permission_continue">需要授权以继续使用</string>
     <string name="play_stop">停止播放</string>
-    <string name="main_download_tips">Github地址可能下载失败，您可以考虑使用代理或者将文件缓存到自己的存储服务</string>
+    <string name="touch_me_record">按住我收音</string>
+
+    <!-- 调试信息 -->
     <string name="debug_message">调试信息</string>
 
     <!-- 返回按钮相关字符串 -->
     <string name="back_to_home">返回主界面</string>
     <string name="back_to_home_desc">点击返回到选择界面</string>
 
+    <!-- 本地数字人配置界面文字 -->
+    <string name="local_main_title">本地数字人配置</string>
+    <string name="local_main_input_address">输入地址</string>
+    <string name="local_main_model_select">模型选择</string>
+    <string name="local_main_model_hint">请选择模型</string>
+    <string name="local_main_app_select">应用选择</string>
+    <string name="local_main_app_hint">请选择应用</string>
+    <string name="local_main_advanced_settings">高级设置</string>
+    <string name="local_main_start_button">启动</string>
+    <string name="local_main_refresh_address">刷新地址</string>
+    <string name="local_main_app_select_developing">应用选择功能开发中</string>
+
+    <!-- 云端数字人配置界面文字 -->
+    <string name="cloud_main_title">云端数字人配置</string>
+    <string name="cloud_main_placeholder">云端数字人功能开发中...</string>
+
+    <!-- 下载相关 -->
+    <string name="download_start">开始下载</string>
+    <string name="download_config_progress">配置文件下载(%d%%)</string>
+    <string name="download_config_unzip">配置文件解压(%d%%)</string>
+    <string name="download_model_progress">模型文件下载(%d%%)</string>
+    <string name="download_model_unzip">模型文件解压(%d%%)</string>
+    <string name="download_error_baseconfig">基础配置下载错误: %s</string>
+    <string name="download_error_model">模型下载错误: %s</string>
+
+    <!-- 语言选择 -->
+    <string name="language_selector">语言</string>
+    <string name="language_chinese">中文</string>
+    <string name="language_english">English</string>
+    <string name="language_dialog_title">选择语言</string>
+    <string name="language_changed">语言已更改，正在重新加载界面...</string>
+    <string name="dialog_confirm">确定</string>
+    <string name="dialog_cancel">取消</string>
 </resources>

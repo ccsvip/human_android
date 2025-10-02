@@ -230,7 +230,7 @@ body {
 
 /* ========== 文字样式 ========== */
 .main-title {
-    font-size: 2.5rem;
+    font-size: 2rem;
     font-weight: 700;
     text-align: center;
     color: white;
@@ -489,5 +489,183 @@ body {
 @media (hover: none) and (pointer: coarse) {
     .choice-card:active {
         transform: scale(0.97);
+    }
+}
+
+/* ========== 语言切换按钮 ========== */
+.language-selector {
+    position: absolute;
+    top: 2rem;
+    right: 2rem;
+    z-index: 100;
+    animation: fadeIn 0.8s ease-out 0.5s both;
+}
+
+.language-button {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border: none;
+    border-radius: 50px;
+    padding: 0.75rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.language-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.language-button:active {
+    transform: translateY(0);
+}
+
+.language-icon {
+    width: 20px;
+    height: 20px;
+    color: #667eea;
+}
+
+.language-text {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #1a202c;
+}
+
+/* 语言选择下拉菜单 */
+.language-dropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    left: 0;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    min-width: 150px;
+    animation: fadeInDown 0.3s ease-out;
+}
+
+.language-dropdown.show {
+    display: block;
+}
+
+.language-option {
+    padding: 0.875rem 1.25rem;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    color: #1a202c;
+    font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.language-option:hover {
+    background: rgba(102, 126, 234, 0.1);
+}
+
+.language-option.active {
+    background: rgba(102, 126, 234, 0.15);
+    color: #667eea;
+    font-weight: 600;
+}
+
+.language-option.active::after {
+    content: '✓';
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+/* 响应式 - 移动端调整语言按钮位置 */
+@media (max-width: 640px) {
+    .language-selector {
+        top: 1rem;
+        right: 1rem;
+    }
+
+    .language-button {
+        padding: 0.625rem 1rem;
+    }
+
+    .language-icon {
+        width: 18px;
+        height: 18px;
+    }
+
+    .language-text {
+        font-size: 0.8125rem;
+    }
+}
+
+/* ========== 底部语言选择器 ========== */
+.language-selector-bottom {
+    position: relative;
+    max-width: 500px;
+    width: 90%;
+    margin: 2rem auto 0;
+    padding: 0 1rem;
+    animation: fadeInUp 0.8s ease-out 0.8s both;
+}
+
+.language-button-bottom {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border: none;
+    border-radius: 15px;
+    padding: 0.875rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    width: auto;
+}
+
+.language-button-bottom:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.language-button-bottom:active {
+    transform: translateY(0);
+}
+
+.language-button-bottom .language-icon {
+    width: 20px;
+    height: 20px;
+    color: #667eea;
+    flex-shrink: 0;
+}
+
+.language-button-bottom span {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #1a202c;
+}
+
+/* 响应式 - 底部语言选择器移动端优化 */
+@media (max-width: 640px) {
+    .language-selector-bottom {
+        margin: 1.5rem auto 0;
+    }
+
+    .language-button-bottom {
+        padding: 0.75rem 1rem;
+    }
+
+    .language-button-bottom .language-icon {
+        width: 18px;
+        height: 18px;
+    }
+
+    .language-button-bottom span {
+        font-size: 0.8125rem;
     }
 }

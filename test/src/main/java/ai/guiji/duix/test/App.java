@@ -1,5 +1,6 @@
 package ai.guiji.duix.test;
 
+import ai.guiji.duix.sdk.i18n.LanguageManager;
 import android.app.Application;
 import android.text.TextUtils;
 
@@ -16,6 +17,10 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         mApp = this;
+
+        // 应用语言设置
+        LanguageManager.Language language = LanguageManager.INSTANCE.getCurrentLanguage(this);
+        LanguageManager.INSTANCE.applyLanguage(this, language);
     }
 
     public static OkHttpClient getOkHttpClient() {

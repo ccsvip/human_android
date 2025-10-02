@@ -18,7 +18,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>欢迎使用索灵数字人</title>
+    <title data-i18n="welcome_title">欢迎使用索灵数字人</title>
     <!-- Tailwind CSS -->
     <link rel="stylesheet" href="./css/tailwind.min.css">
     <!-- 自定义样式 -->
@@ -51,8 +51,8 @@
         </div>
 
         <!-- 标题区域 -->
-        <h1 class="main-title">欢迎使用索灵数字人</h1>
-        <p class="sub-title">请选择一种方式开始您的智能体验</p>
+        <h1 class="main-title" data-i18n="welcome_title">欢迎使用索灵数字人</h1>
+        <p class="sub-title" data-i18n="welcome_subtitle">请选择一种方式开始您的智能体验</p>
 
         <!-- 选择卡片 -->
         <div class="cards-container">
@@ -69,8 +69,8 @@
 
                     <!-- 文本内容 -->
                     <div class="card-text">
-                        <h3 class="card-title">本地数字人</h3>
-                        <p class="card-description">在您的设备上本地运行，无需网络，保护隐私</p>
+                        <h3 class="card-title" data-i18n="local_mode_title">本地数字人</h3>
+                        <p class="card-description" data-i18n="local_mode_desc">在您的设备上本地运行，无需网络，保护隐私</p>
                     </div>
 
                     <!-- 箭头指示器 -->
@@ -94,8 +94,8 @@
 
                     <!-- 文本内容 -->
                     <div class="card-text">
-                        <h3 class="card-title">云端数字人</h3>
-                        <p class="card-description">通过云服务访问，获取更强大的AI能力</p>
+                        <h3 class="card-title" data-i18n="cloud_mode_title">云端数字人</h3>
+                        <p class="card-description" data-i18n="cloud_mode_desc">通过云服务访问，获取更强大的AI能力</p>
                     </div>
 
                     <!-- 箭头指示器 -->
@@ -109,9 +109,27 @@
 
         </div>
 
+        <!-- 语言选择器 -->
+        <div class="language-selector-bottom">
+            <button class="language-button-bottom" id="languageButton" onclick="toggleLanguageDropdown()">
+                <svg class="language-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"/>
+                </svg>
+                <span id="currentLanguageText" data-i18n="language_selector">语言</span>
+            </button>
+            <div class="language-dropdown" id="languageDropdown">
+                <div class="language-option" onclick="changeLanguage('zh')">
+                    <span data-i18n="language_chinese">中文</span>
+                </div>
+                <div class="language-option" onclick="changeLanguage('en')">
+                    <span data-i18n="language_english">English</span>
+                </div>
+            </div>
+        </div>
+
         <!-- 底部信息 -->
         <div class="footer-info">
-            <p class="footer-text">
+            <p class="footer-text" data-i18n="footer_text">
                 AI驱动 · 智能交互 · 技术支持
             </p>
         </div>
@@ -119,6 +137,7 @@
     </div>
 
     <!-- JavaScript -->
+    <script src="./js/i18n.js"></script>
     <script src="./js/welcome.js"></script>
 </body>
 </html>

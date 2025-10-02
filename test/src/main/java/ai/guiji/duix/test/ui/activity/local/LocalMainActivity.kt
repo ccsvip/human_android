@@ -19,6 +19,7 @@ import ai.guiji.duix.sdk.client.VirtualModelUtil
 import ai.guiji.duix.test.R
 import ai.guiji.duix.test.databinding.ActivityLocalMainBinding
 import ai.guiji.duix.test.ui.activity.BaseActivity
+import ai.guiji.duix.test.ui.dialog.LanguageSelectorDialog
 import ai.guiji.duix.test.ui.dialog.LoadingDialog
 import ai.guiji.duix.test.ui.dialog.ModelSelectorDialog
 import android.annotation.SuppressLint
@@ -76,6 +77,11 @@ class LocalMainActivity : BaseActivity() {
      * 功能: 绑定所有UI控件的事件监听器
      */
     private fun setupUI() {
+        // 语言切换按钮
+        binding.btnLanguage.setOnClickListener {
+            showLanguageSelector()
+        }
+
         // 返回主界面按钮
         binding.fabBackToHome.setOnClickListener {
             backToMainMenu()
@@ -112,6 +118,17 @@ class LocalMainActivity : BaseActivity() {
         // 启动按钮
         binding.btnStart.setOnClickListener {
             play()
+        }
+    }
+
+    /**
+     * 显示语言选择器
+     * 功能: 弹出语言选择对话框，用户选择语言后重新创建Activity
+     */
+    private fun showLanguageSelector() {
+        LanguageSelectorDialog.show(this) { _ ->
+            // 语言变更后，重新创建Activity以应用新语言
+            recreate()
         }
     }
 

@@ -1,5 +1,6 @@
 package ai.guiji.duix.sdk.welcome
 
+import ai.guiji.duix.sdk.i18n.LanguageManager
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
@@ -25,12 +26,7 @@ import ai.guiji.duix.sdk.client.R
  * - 处理用户选择（本地/云端数字人）
  * - 与JavaScript交互
  * - 管理页面生命周期
- *
- * TODO: 后续可扩展的功能
- * - 页面加载进度显示
- * - 网络状态检测
- * - 主题切换支持
- * - 多语言支持
+ * - 支持多语言国际化
  */
 class WelcomeActivity : AppCompatActivity() {
 
@@ -77,6 +73,13 @@ class WelcomeActivity : AppCompatActivity() {
 
         // 加载欢迎页面
         loadWelcomePage()
+    }
+
+    override fun attachBaseContext(newBase: Context) {
+        // 应用语言设置
+        val language = LanguageManager.getCurrentLanguage(newBase)
+        val context = LanguageManager.applyLanguage(newBase, language)
+        super.attachBaseContext(context)
     }
 
     /**
@@ -172,7 +175,12 @@ class WelcomeActivity : AppCompatActivity() {
                 super.onPageFinished(view, url)
                 isPageLoaded = true
 
-                // TODO: 添加页面加载完成的动画效果
+                // 设置WebView的语言
+                val currentLanguage = LanguageManager.getCurrentLanguage(this@WelcomeActivity)
+                val langCode = currentLanguage.code
+                webView.evaluateJavascript("setLanguageFromAndroid('$langCode')") {}
+
+                // 添加页面加载完成的动画效果
                 animatePageEntry()
             }
 
@@ -193,7 +201,6 @@ class WelcomeActivity : AppCompatActivity() {
             @Suppress("DEPRECATION")
             override fun onReceivedError(view: WebView?, errorCode: Int, description: String?, failingUrl: String?) {
                 super.onReceivedError(view, errorCode, description, failingUrl)
-                // TODO: 添加错误处理和重试机制
                 handlePageError(errorCode, description)
             }
         }
@@ -201,7 +208,6 @@ class WelcomeActivity : AppCompatActivity() {
         // 设置WebChromeClient用于调试
         webView.webChromeClient = object : WebChromeClient() {
             override fun onConsoleMessage(consoleMessage: android.webkit.ConsoleMessage?): Boolean {
-                // TODO: 添加调试日志收集
                 consoleMessage?.let {
                     android.util.Log.d("WelcomeWebView", "${it.messageLevel()}: ${it.message()}")
                 }
@@ -220,8 +226,6 @@ class WelcomeActivity : AppCompatActivity() {
      */
     private fun loadWelcomePage() {
         val welcomeUrl = "file:///android_asset/welcome/welcome.html"
-
-        // 简化处理，直接使用基本URL（避免BuildConfig依赖问题）
         webView.loadUrl(welcomeUrl)
     }
 
@@ -244,7 +248,6 @@ class WelcomeActivity : AppCompatActivity() {
     @Suppress("UNUSED_PARAMETER")
     private fun handlePageError(errorCode: Int, description: String?) {
         Toast.makeText(this, "页面加载失败: $description", Toast.LENGTH_SHORT).show()
-        // TODO: 添加重试按钮或fallback UI
         finish()
     }
 
@@ -271,9 +274,39 @@ class WelcomeActivity : AppCompatActivity() {
         @JavascriptInterface
         fun onPageLoaded() {
             runOnUiThread {
-                // TODO: 可以在这里添加页面加载完成的额外处理
                 android.util.Log.d("WelcomeActivity", "欢迎页面加载完成")
             }
+        }
+
+        /**
+         * 获取当前语言
+         */
+        @JavascriptInterface
+        fun getCurrentLanguage(): String {
+            val language = LanguageManager.getCurrentLanguage(this@WelcomeActivity)
+            return language.code
+        }
+
+        /**
+         * 切换语言（新方法，从WebView调用）
+         */
+        @JavascriptInterface
+        fun changeLanguage(langCode: String) {
+            runOnUiThread {
+                val language = LanguageManager.Language.fromCode(langCode)
+                LanguageManager.setLanguage(this@WelcomeActivity, language)
+
+                // 重新加载Activity以应用语言变更
+                recreate()
+            }
+        }
+
+        /**
+         * 处理语言变更（保留兼容性）
+         */
+        @JavascriptInterface
+        fun onLanguageChanged(langCode: String) {
+            changeLanguage(langCode)
         }
     }
 
@@ -299,7 +332,6 @@ class WelcomeActivity : AppCompatActivity() {
             .setDuration(200)
             .withEndAction {
                 finish()
-                // TODO: 添加Activity切换动画
                 overridePendingTransition(0, android.R.anim.fade_out)
             }
             .start()
