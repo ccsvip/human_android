@@ -1,3 +1,18 @@
+<!--
+    欢迎页面 - 数字人模式选择界面
+
+    功能说明：
+    - 提供本地模式和云端模式两种选择
+    - 使用现代化UI设计，包含渐变、动画、卡片效果
+    - 响应式设计，适配各种屏幕尺寸
+    - 流畅的交互动画和视觉反馈
+
+    技术栈：
+    - HTML5 + Tailwind CSS
+    - 纯CSS动画（无需JavaScript动画库）
+    - SVG图标
+    - WebView JavaScript Bridge与Android通信
+-->
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -6,92 +21,499 @@
     <title>欢迎使用数字人</title>
     <link rel="stylesheet" href="./css/tailwind.min.css">
     <style>
-        /* 防止页面滚动和缩放 */
+        /* ========== 基础样式 ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             overflow: hidden;
             -webkit-user-select: none;
             -webkit-touch-callout: none;
             -webkit-tap-highlight-color: transparent;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        /* ========== 背景渐变 ========== */
+        .gradient-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            z-index: -2;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* ========== 装饰性背景元素 ========== */
+        .floating-shapes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+            opacity: 0.15;
+        }
+
+        .shape {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .shape-1 {
+            width: 300px;
+            height: 300px;
+            top: -150px;
+            left: -150px;
+            animation-delay: 0s;
+        }
+
+        .shape-2 {
+            width: 200px;
+            height: 200px;
+            top: 50%;
+            right: -100px;
+            animation-delay: 5s;
+        }
+
+        .shape-3 {
+            width: 250px;
+            height: 250px;
+            bottom: -125px;
+            left: 50%;
+            animation-delay: 10s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(-30px) rotate(90deg); }
+            50% { transform: translateY(-60px) rotate(180deg); }
+            75% { transform: translateY(-30px) rotate(270deg); }
+        }
+
+        /* ========== Logo容器 ========== */
+        .logo-wrapper {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 2rem;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        /* 光环效果 */
+        .logo-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 140px;
+            height: 140px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.6; }
+            50% { transform: translate(-50%, -50%) scale(1.1); opacity: 0.8; }
+        }
+
+        /* Logo主体 */
+        .logo-circle {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow:
+                0 10px 30px rgba(102, 126, 234, 0.4),
+                0 0 0 10px rgba(255, 255, 255, 0.1),
+                inset 0 -3px 10px rgba(0, 0, 0, 0.2);
+            z-index: 10;
+        }
+
+        .logo-icon {
+            width: 60px;
+            height: 60px;
+            color: white;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+        }
+
+        /* ========== 文字样式 ========== */
+        .main-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            color: white;
+            margin-bottom: 0.75rem;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            animation: fadeInDown 0.8s ease-out 0.2s both;
+            letter-spacing: -0.5px;
+        }
+
+        .sub-title {
+            font-size: 1.125rem;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 3rem;
+            animation: fadeInDown 0.8s ease-out 0.4s both;
+            font-weight: 400;
+        }
+
+        /* ========== 选择卡片容器 ========== */
+        .cards-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            max-width: 500px;
+            width: 90%;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        /* ========== 选择卡片 ========== */
+        .choice-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 1.75rem 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow:
+                0 10px 30px rgba(0, 0, 0, 0.1),
+                0 1px 3px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 0.8s ease-out both;
+        }
+
+        .choice-card:nth-child(1) {
+            animation-delay: 0.6s;
+        }
+
+        .choice-card:nth-child(2) {
+            animation-delay: 0.7s;
+        }
+
+        /* 卡片悬浮效果 */
+        .choice-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .choice-card:hover::before,
+        .choice-card:active::before {
+            opacity: 1;
+        }
+
+        .choice-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow:
+                0 20px 40px rgba(0, 0, 0, 0.15),
+                0 5px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        .choice-card:active {
+            transform: translateY(-2px) scale(0.98);
+        }
+
+        /* ========== 卡片内容 ========== */
+        .card-content {
+            display: flex;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 图标容器 */
+        .icon-container {
+            flex-shrink: 0;
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1.25rem;
+            transition: all 0.3s ease;
+        }
+
+        .local-icon-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .cloud-icon-bg {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            box-shadow: 0 4px 15px rgba(240, 147, 251, 0.3);
+        }
+
+        .choice-card:hover .icon-container {
+            transform: rotate(5deg) scale(1.1);
+        }
+
+        .icon-svg {
+            width: 32px;
+            height: 32px;
+            color: white;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+        }
+
+        /* 文本内容 */
+        .card-text {
+            flex: 1;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1a202c;
+            margin-bottom: 0.25rem;
+            letter-spacing: -0.3px;
+        }
+
+        .card-description {
+            font-size: 0.9rem;
+            color: #718096;
+            line-height: 1.4;
+        }
+
+        /* 箭头指示器 */
+        .arrow-indicator {
+            flex-shrink: 0;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(102, 126, 234, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            margin-left: 0.75rem;
+        }
+
+        .arrow-svg {
+            width: 16px;
+            height: 16px;
+            color: #667eea;
+            transition: transform 0.3s ease;
+        }
+
+        .choice-card:hover .arrow-indicator {
+            background: rgba(102, 126, 234, 0.2);
+            transform: scale(1.1);
+        }
+
+        .choice-card:hover .arrow-svg {
+            transform: translateX(3px);
+        }
+
+        /* ========== 底部信息 ========== */
+        .footer-info {
+            text-align: center;
+            margin-top: 3rem;
+            padding: 1rem;
+            animation: fadeIn 1s ease-out 0.8s both;
+        }
+
+        .footer-text {
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 300;
+        }
+
+        /* ========== 动画定义 ========== */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ========== 响应式设计 ========== */
+        @media (max-width: 640px) {
+            .main-title {
+                font-size: 2rem;
+            }
+
+            .sub-title {
+                font-size: 1rem;
+            }
+
+            .choice-card {
+                padding: 1.5rem 1.25rem;
+            }
+
+            .icon-container {
+                width: 50px;
+                height: 50px;
+            }
+
+            .icon-svg {
+                width: 28px;
+                height: 28px;
+            }
+
+            .card-title {
+                font-size: 1.125rem;
+            }
+
+            .card-description {
+                font-size: 0.875rem;
+            }
+        }
+
+        @media (min-width: 641px) and (max-width: 1024px) {
+            .cards-container {
+                max-width: 600px;
+            }
+        }
+
+        /* ========== 触摸反馈优化 ========== */
+        @media (hover: none) and (pointer: coarse) {
+            .choice-card:active {
+                transform: scale(0.97);
+            }
         }
     </style>
 </head>
-<body class="modern-bg min-h-screen">
-    <div class="flex flex-col items-center justify-center min-h-screen welcome-container fade-in">
+<body>
+    <!-- 渐变背景 -->
+    <div class="gradient-background"></div>
 
-        <!-- Logo区域 - 专业光效设计 -->
-        <div class="logo-container slide-up">
-            <!-- 增强光效层 -->
-            <div class="absolute inset-0 flex items-center justify-center">
-                <div class="light-ring light-ring-outer"></div>
-                <div class="light-ring light-ring-middle"></div>
-                <div class="light-ring light-ring-inner"></div>
-            </div>
+    <!-- 装饰性浮动形状 -->
+    <div class="floating-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+    </div>
 
-            <!-- Logo主体 - 渐变和阴影增强 -->
-            <div class="relative z-10 w-24 h-24 rounded-full flex items-center justify-center logo-center">
-                <!-- TODO: 可配置的数字人图标 - 专业设计图标 -->
-                <svg class="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 1H5C3.9 1 3 1.9 3 3V7H21V9ZM21 11H3V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V11ZM8 18C7.45 18 7 17.55 7 17S7.45 16 8 16 9 16.45 9 17 8.55 18 8 18ZM16 18C15.45 18 15 17.55 15 17S15.45 16 16 16 17 16.45 17 17 16.55 18 16 18Z"/>
+    <!-- 主容器 -->
+    <div class="flex flex-col items-center justify-center min-h-screen px-4 py-8">
+
+        <!-- Logo区域 -->
+        <div class="logo-wrapper">
+            <div class="logo-glow"></div>
+            <div class="logo-circle">
+                <!-- 数字人图标 - 使用专业设计的人形机器人图标 -->
+                <svg class="logo-icon" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2M15.89 8.11C15.5 7.72 14.83 7 13.53 7C12.21 7 11.54 7.72 11.15 8.11C10.76 8.5 10.76 9.13 11.15 9.52C11.54 9.91 12.21 10.63 13.53 10.63C14.83 10.63 15.5 9.91 15.89 9.52C16.27 9.13 16.27 8.5 15.89 8.11M22 9V20C22 21.1 21.1 22 20 22H4C2.9 22 2 21.1 2 20V9C2 7.9 2.9 7 4 7H8C8 8.66 9.34 10 11 10V11.26C9.07 11.61 7.5 13.27 7.5 15.25C7.5 17.45 9.3 19.25 11.5 19.25C13.7 19.25 15.5 17.45 15.5 15.25C15.5 13.27 13.93 11.61 12 11.26V10C13.66 10 15 8.66 15 7H20C21.1 7 22 7.9 22 9M11.5 13C12.6 13 13.5 13.9 13.5 15C13.5 16.1 12.6 17 11.5 17C10.4 17 9.5 16.1 9.5 15C9.5 13.9 10.4 13 11.5 13Z"/>
                 </svg>
             </div>
         </div>
 
-        <!-- 主标题 - 渐变文字效果 -->
-        <h1 class="title-main text-3xl sm:text-4xl md:text-5xl text-center mb-4 slide-up">
-            欢迎使用数字人
-        </h1>
+        <!-- 标题区域 -->
+        <h1 class="main-title">欢迎使用数字人</h1>
+        <p class="sub-title">请选择一种方式开始您的智能体验</p>
 
-        <!-- 副标题 - 优化字体层级 -->
-        <p class="subtitle-text text-lg text-center mb-12 slide-up">
-            选择一种方式开始您的体验
-        </p>
+        <!-- 选择卡片 -->
+        <div class="cards-container">
 
-        <!-- 选择按钮区域 - 现代化设计 -->
-        <div class="w-full choices-container slide-up">
-
-            <!-- 本地数字人选项 - 专业按钮设计 -->
-            <div class="choice-button" onclick="selectOption('local')" id="localOption">
-                <div class="flex items-center">
-                    <div class="flex-shrink-0">
-                        <div class="choice-icon">
-                            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                            </svg>
-                        </div>
+            <!-- 本地模式卡片 -->
+            <div class="choice-card" onclick="selectOption('local')" id="localOption">
+                <div class="card-content">
+                    <!-- 图标 -->
+                    <div class="icon-container local-icon-bg">
+                        <svg class="icon-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                        </svg>
                     </div>
-                    <div class="ml-4 flex-1">
-                        <h3 class="choice-title">使用本地数字人</h3>
-                        <p class="choice-description">在您的设备上运行</p>
+
+                    <!-- 文本内容 -->
+                    <div class="card-text">
+                        <h3 class="card-title">本地数字人</h3>
+                        <p class="card-description">在您的设备上本地运行，无需网络，保护隐私</p>
                     </div>
-                    <div class="arrow-right">→</div>
+
+                    <!-- 箭头指示器 -->
+                    <div class="arrow-indicator">
+                        <svg class="arrow-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"/>
+                        </svg>
+                    </div>
                 </div>
             </div>
 
-            <!-- 云端数字人选项 - 专业按钮设计 -->
-            <div class="choice-button" onclick="selectOption('cloud')" id="cloudOption">
-                <div class="flex items-center">
-                    <div class="flex-shrink-0">
-                        <div class="choice-icon">
-                            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
-                            </svg>
-                        </div>
+            <!-- 云端模式卡片 -->
+            <div class="choice-card" onclick="selectOption('cloud')" id="cloudOption">
+                <div class="card-content">
+                    <!-- 图标 -->
+                    <div class="icon-container cloud-icon-bg">
+                        <svg class="icon-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                        </svg>
                     </div>
-                    <div class="ml-4 flex-1">
-                        <h3 class="choice-title">使用云端数字人</h3>
-                        <p class="choice-description">通过云服务访问</p>
+
+                    <!-- 文本内容 -->
+                    <div class="card-text">
+                        <h3 class="card-title">云端数字人</h3>
+                        <p class="card-description">通过云服务访问，获取更强大的AI能力</p>
                     </div>
-                    <div class="arrow-right">→</div>
+
+                    <!-- 箭头指示器 -->
+                    <div class="arrow-indicator">
+                        <svg class="arrow-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"/>
+                        </svg>
+                    </div>
                 </div>
             </div>
+
         </div>
 
-        <!-- 底部技术支持信息 - 精致样式 -->
-        <div class="mt-12 text-center slide-up">
+        <!-- 底部信息 -->
+        <div class="footer-info">
             <p class="footer-text">
-                技术支持 by Acme Corp
+                AI驱动 · 智能交互 · 技术支持
             </p>
         </div>
+
     </div>
 
     <!-- JavaScript -->

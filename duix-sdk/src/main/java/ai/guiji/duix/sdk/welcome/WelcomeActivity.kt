@@ -15,6 +15,7 @@ import android.webkit.WebViewClient
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
+import ai.guiji.duix.sdk.client.R
 
 /**
  * 欢迎页面Activity - 使用WebView展示选择界面
@@ -62,13 +63,14 @@ class WelcomeActivity : AppCompatActivity() {
     private var isPageLoaded = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(R.style.Theme_Duix_Welcome)
         super.onCreate(savedInstanceState)
 
-        // 设置全屏和状态栏
-        setupFullScreen()
-
-        // 创建和配置WebView
+        // 创建和配置WebView (必须先调用setContentView)
         setupWebView()
+
+        // 设置全屏和状态栏 (必须在setContentView之后)
+        setupFullScreen()
 
         // 配置返回按钮处理
         setupBackPressedHandler()
