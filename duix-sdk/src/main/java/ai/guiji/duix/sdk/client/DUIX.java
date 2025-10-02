@@ -3,15 +3,30 @@ package ai.guiji.duix.sdk.client;
 import android.content.Context;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import ai.guiji.duix.sdk.client.controller.DUIXAudioController;
+import ai.guiji.duix.sdk.client.controller.DUIXInitializer;
+import ai.guiji.duix.sdk.client.controller.DUIXMotionController;
 import ai.guiji.duix.sdk.client.loader.ModelInfo;
 import ai.guiji.duix.sdk.client.render.RenderSink;
 import ai.guiji.duix.sdk.client.thread.RenderThread;
 
+/**
+ * DUIX - 数字人SDK主控类
+ *
+ * 架构设计：使用Facade模式，内部委托给专门的Controller处理不同职责
+ * - DUIXInitializer: 初始化和模型检查
+ * - DUIXAudioController: 音频控制
+ * - DUIXMotionController: 动作控制
+ *
+ * 职责：
+ * - 提供统一的API接口
+ * - 协调各个Controller的工作
+ * - 管理渲染线程的生命周期
+ * - 转发事件回调
+ */
 public class DUIX {
 
     private final Context mContext;
@@ -21,8 +36,12 @@ public class DUIX {
     private ExecutorService commonExecutor = Executors.newSingleThreadExecutor();
     private RenderThread mRenderThread;
 
+    // 控制器（按功能解耦）
+    private final DUIXInitializer initializer;
+    private final DUIXAudioController audioController;
+    private final DUIXMotionController motionController;
+
     private boolean isReady;            // 准备完成的标记
-    private float mVolume = 1.0F;
     private RenderThread.Reporter reporter;
 
     public DUIX(Context context, String modelName, RenderSink sink, Callback callback) {
@@ -30,47 +49,62 @@ public class DUIX {
         this.mCallback = callback;
         this.modelName = modelName;
         this.renderSink = sink;
+
+        // 初始化各个控制器
+        this.initializer = new DUIXInitializer(context, modelName);
+        this.audioController = new DUIXAudioController();
+        this.motionController = new DUIXMotionController();
     }
 
     /**
-     * 模型读取
+     * 初始化数字人模型
+     *
+     * 步骤：
+     * 1. 检查基础配置（gj_dh_res）
+     * 2. 检查数字人模型文件
+     * 3. 创建渲染线程
+     * 4. 启动Native层初始化
+     *
+     * 回调：
+     * - CALLBACK_EVENT_INIT_READY: 初始化成功
+     * - CALLBACK_EVENT_INIT_ERROR: 初始化失败
      */
     public void init() {
-        // 先检查模型文件
-        File duixDir = mContext.getExternalFilesDir("duix");
-
-        File baseConfigDir = new File(duixDir + "/model/gj_dh_res");
-        File baseConfigTag = new File(duixDir + "/model/tmp/gj_dh_res");
-        if (!baseConfigDir.exists() || !baseConfigTag.exists()){
-            if (mCallback != null){
-                mCallback.onEvent(Constant.CALLBACK_EVENT_INIT_ERROR, "[gj_dh_res] does not exist", null);
+        // 1. 检查基础配置
+        DUIXInitializer.CheckResult baseResult = initializer.checkBaseConfig();
+        if (!baseResult.isSuccess()) {
+            if (mCallback != null) {
+                mCallback.onEvent(Constant.CALLBACK_EVENT_INIT_ERROR, baseResult.getErrorMessage(), null);
             }
             return;
         }
 
-        String dirName = "";
-        if (modelName.startsWith("https://") || modelName.startsWith("http://")){
-            try {
-                dirName = modelName.substring(modelName.lastIndexOf("/") + 1).replace(".zip", "");
-            }catch (Exception ignore){
-            }
-        } else {
-            dirName = modelName;
-        }
-        File modelDir = new File(duixDir + "/model", dirName);
-        File modelTag = new File(duixDir + "/model/tmp", dirName);
-        if (!modelDir.exists() || !modelTag.exists()){
-            if (mCallback != null){
-                mCallback.onEvent(Constant.CALLBACK_EVENT_INIT_ERROR,  "[" + dirName + "] does not exist", null);
+        // 2. 检查模型文件
+        DUIXInitializer.CheckResult modelResult = initializer.checkModel();
+        if (!modelResult.isSuccess()) {
+            if (mCallback != null) {
+                mCallback.onEvent(Constant.CALLBACK_EVENT_INIT_ERROR, modelResult.getErrorMessage(), null);
             }
             return;
         }
 
+        // 3. 获取模型目录
+        File modelDir = modelResult.getModelDir();
+        if (modelDir == null) {
+            if (mCallback != null) {
+                mCallback.onEvent(Constant.CALLBACK_EVENT_INIT_ERROR, "Model directory is null", null);
+            }
+            return;
+        }
+
+        // 4. 停止旧的渲染线程（如果存在）
         if (mRenderThread != null) {
             mRenderThread.stopPreview();
             mRenderThread = null;
         }
-        mRenderThread = new RenderThread(mContext, modelDir, renderSink, mVolume, new RenderThread.RenderCallback() {
+
+        // 5. 创建新的渲染线程
+        mRenderThread = new RenderThread(mContext, modelDir, renderSink, audioController.getVolume(), new RenderThread.RenderCallback() {
 
             @Override
             public void onInitResult(int code, int subCode, String message, ModelInfo modelInfo) {
@@ -121,62 +155,59 @@ public class DUIX {
                 }
             }
         }, reporter);
+
+        // 6. 设置线程名称并启动
         mRenderThread.setName("DUIXRender-Thread");
         mRenderThread.start();
+
+        // 7. 将渲染线程注入到控制器
+        audioController.setRenderThread(mRenderThread);
+        motionController.setRenderThread(mRenderThread);
     }
 
     public boolean isReady() {
         return isReady;
     }
 
+    /**
+     * 设置音量
+     * @param volume 音量值（0.0 ~ 1.0）
+     */
     public void setVolume(float volume){
-        if (volume >= 0.0F && volume <= 1.0F){
-            mVolume = volume;
-            if (mRenderThread != null){
-                mRenderThread.setVolume(volume);
-            }
-        }
+        audioController.setVolume(volume);
     }
 
+    /**
+     * 开始推送PCM音频流
+     */
     public void startPush(){
-        if (mRenderThread != null){
-            mRenderThread.startPush();
-        }
+        audioController.startPush();
     }
 
+    /**
+     * 推送PCM音频数据
+     * @param buffer PCM数据（16kHz, 16bit, Mono）
+     */
     public void pushPcm(byte[] buffer){
-        if (mRenderThread != null){
-            mRenderThread.pushAudio(buffer.clone());
-        }
+        audioController.pushPcm(buffer);
     }
 
+    /**
+     * 停止推送PCM音频流
+     */
     public void stopPush(){
-        if (mRenderThread != null){
-            mRenderThread.stopPush();
-        }
+        audioController.stopPush();
     }
 
 
     /**
-     * 播放音频文件
-     * 这里演示了兼容旧的wav音频文件驱动
-     * @param wavPath 16k采样率单通道16位深的wav本地文件
+     * 播放WAV音频文件
+     * （兼容旧的WAV文件驱动方式）
+     * @param wavPath 16k采样率单通道16位深的WAV本地文件路径
      */
     public void playAudio(String wavPath) {
-        File wavFile = new File(wavPath);
-        if (isReady && mRenderThread != null && wavFile.exists() && wavFile.length() > 44) {
-//            mRenderThread.prepareAudio(wavPath);
-            // 这里默认wav的头是44bytes，并且采样率是16000、单通道、16bit深度
-            byte[] data = new byte[(int) wavFile.length()];
-            try (FileInputStream inputStream = new FileInputStream(wavFile)) {
-                inputStream.read(data);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-            byte[] slice = Arrays.copyOfRange(data, 44, data.length);
-            startPush();
-            pushPcm(slice);
-            stopPush();
+        if (isReady) {
+            audioController.playAudio(wavPath);
         }
     }
 
@@ -184,33 +215,30 @@ public class DUIX {
      * 停止音频播放
      */
     public boolean stopAudio() {
-        if (isReady && mRenderThread != null) {
-            mRenderThread.stopPlayAudio();
-            return true;
-        } else {
-            return false;
-        }
+        return isReady && audioController.stopAudio();
     }
 
 
     /**
-     * 播放一只指定动作区间
+     * 播放指定动作
+     * @param name 动作名称
+     * @param now true表示立即播放，false表示在当前动作结束后播放
      */
     public void startMotion(String name, boolean now) {
-        if (mRenderThread != null) {
-            mRenderThread.requireMotion(name, now);
-        }
+        motionController.startMotion(name, now);
     }
 
     /**
-     * 随机播放一个动作区间
+     * 随机播放一个动作
+     * @param now true表示立即播放，false表示在当前动作结束后播放
      */
     public void startRandomMotion(boolean now) {
-        if (mRenderThread != null) {
-            mRenderThread.requireRandomMotion(now);
-        }
+        motionController.startRandomMotion(now);
     }
 
+    /**
+     * 释放资源
+     */
     public void release() {
         isReady = false;
         if (commonExecutor != null) {
@@ -222,6 +250,10 @@ public class DUIX {
         }
     }
 
+    /**
+     * 设置渲染统计报告器
+     * @param reporter 报告器
+     */
     public void setReporter(RenderThread.Reporter reporter){
         this.reporter = reporter;
         if (mRenderThread != null) {
