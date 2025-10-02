@@ -27,6 +27,19 @@
                 "repomix",
                 "--mcp"
             ]
+        },
+        "reference-servers": {
+            "command": "cmd",
+            "args": [
+                "/c",
+                "npx",
+                "-y",
+                "@smithery/cli@latest",
+                "run",
+                "@kiennd/reference-servers",
+                "--key",
+                "3f0f62a4-d0ec-4e82-9830-2594ae0bf7f0"
+            ]
         }
     }
 }
